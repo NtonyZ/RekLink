@@ -221,6 +221,47 @@
     );
   }
 
+  // ---- Крайние даты подготовки размещения (п. 11.5 ТЗ) ----
+  // Даты считаются обратным ходом от 1-го числа месяца старта. Если хотя бы одна
+  // из них уже прошла, старт в этом месяце технически невозможен — витрина обязана
+  // сказать об этом до оформления заявки и предложить ближайший доступный месяц.
+  function leadTimesFor(format) {
+    return RL.leadTimes.filter(function (lt) {
+      if (format === "led_screen" || format === "indoor") return /Все форматы|Видеоформаты/.test(lt.format);
+      if (format === "media_poster") return /Все форматы|Медиа-постер|Видеоформаты/.test(lt.format);
+      return /Все форматы|Скроллер/.test(lt.format);
+    });
+  }
+
+  function startDateFor(offset) {
+    var now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + offset, 1);
+  }
+
+  function deadlinesFor(format, startOffset) {
+    var start = startDateFor(startOffset);
+    return leadTimesFor(format).map(function (lt) {
+      var d = new Date(start);
+      d.setDate(d.getDate() - lt.days);
+      return { stage: lt.stage, date: d };
+    });
+  }
+
+  function scheduleFeasibility(format, startOffset) {
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var list = deadlinesFor(format, startOffset);
+    var missed = list.filter(function (d) { return d.date < today; });
+    var earliest = 0;
+    if (missed.length) {
+      for (var off = startOffset + 1; off <= startOffset + 12; off++) {
+        var ok = deadlinesFor(format, off).every(function (d) { return d.date >= today; });
+        if (ok) { earliest = off; break; }
+      }
+    }
+    return { deadlines: list, missed: missed, feasible: missed.length === 0, earliestOffset: earliest };
+  }
+
   function locationFor(structureId) {
     var num = String(structureId).replace(/^S/, "");
     return (global.RL_LOCATIONS || {})[num] || null;
@@ -246,6 +287,7 @@
     qs: qs, escapeHtml: escapeHtml,
     photoPlaceholder: photoPlaceholder, availabilityBadge: availabilityBadge, sideDirectionLabel: sideDirectionLabel,
     photoUrl: photoUrl, photoTile: photoTile, locationFor: locationFor,
+    deadlinesFor: deadlinesFor, scheduleFeasibility: scheduleFeasibility,
     catalogItems: catalogItems, itemAvailability: itemAvailability, itemFreeForRange: itemFreeForRange
   };
 })(window);

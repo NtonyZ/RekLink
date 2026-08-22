@@ -163,11 +163,37 @@
     setTimeout(function () { map.invalidateSize(); }, 150);
   }
 
+  // Площадки, для которых выбранный старт уже невозможен по срокам подготовки (п. 11.5 ТЗ)
+  function infeasibleItems() {
+    return items.map(function (it) {
+      return { item: it, sched: RL_UTIL.scheduleFeasibility(it.format, it.startOffset || 0) };
+    }).filter(function (x) { return !x.sched.feasible; });
+  }
+
+  function renderScheduleWarning() {
+    var bad = infeasibleItems();
+    var el = document.getElementById("schedule-warning");
+    if (!bad.length) { el.style.display = "none"; return; }
+    var names = bad.map(function (x) { return RL_UTIL.escapeHtml(x.item.title); }).join(", ");
+    el.innerHTML =
+      "Старт уже невозможен по срокам подготовки: " + names + ". " +
+      "Подписание счёта-протокола и подача материалов должны пройти до начала месяца." +
+      '<br><button type="button" id="btn-shift">Перенести на ближайшую доступную дату</button>';
+    el.style.display = "block";
+    document.getElementById("btn-shift").addEventListener("click", function () {
+      bad.forEach(function (x) {
+        if (x.sched.earliestOffset) x.item.startOffset = x.sched.earliestOffset;
+      });
+      persistAndRender();
+    });
+  }
+
   function renderAll() {
     renderItems();
     renderSummary();
     renderReach();
     renderMap();
+    renderScheduleWarning();
   }
   renderAll();
 
@@ -196,6 +222,18 @@
     var pd = document.getElementById("f-consent-pd").checked;
     if (!name || !phone || !email) { alert("Заполните контактное лицо, телефон и e-mail."); return; }
     if (!pd) { alert("Необходимо согласие на обработку персональных данных."); return; }
+    var bad = infeasibleItems();
+    if (bad.length) {
+      var ok = confirm(
+        "По " + bad.length + " площадк" + (bad.length === 1 ? "е" : "ам") +
+        " выбранный месяц старта уже невозможен: сроки подписания счёта-протокола и подачи материалов прошли.\n\n" +
+        "Нажмите «Отмена», чтобы перенести старт на ближайшую доступную дату, или «ОК», чтобы отправить заявку — менеджер согласует новый срок."
+      );
+      if (!ok) {
+        document.getElementById("schedule-warning").scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
     var num = "RL-" + new Date().getFullYear() + "-" + String(Math.floor(1000 + Math.random() * 9000));
     document.getElementById("success-number").textContent = num;
     document.getElementById("apply-form").style.display = "none";

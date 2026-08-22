@@ -206,19 +206,33 @@
 
       document.getElementById("fee-note").innerHTML = "<strong>Сбор за размещение рекламы</strong> уплачивается рекламодателем самостоятельно (" + RL.feeInfo.decree + "). Компания сбор не удерживает и не перечисляет.";
 
-      // deadlines relative to a synthetic start date = today + startOffset months, day 1
-      var now = new Date();
-      var startDate = new Date(now.getFullYear(), now.getMonth() + startOffset, 1);
-      var deadlines = RL.leadTimes.filter(function (lt) {
-        if (isLed) return /Все форматы|Видеоформаты/.test(lt.format);
-        if (format === "media_poster") return /Все форматы|Медиа-постер|Видеоформаты/.test(lt.format);
-        return /Все форматы|Скроллер/.test(lt.format);
-      });
-      document.getElementById("deadline-list").innerHTML = deadlines.map(function (lt) {
-        var d = new Date(startDate);
-        d.setDate(d.getDate() - lt.days);
-        return "<li><span>" + lt.stage + "</span><span>" + d.toLocaleDateString("ru-RU") + "</span></li>";
+      // Крайние даты обратным ходом от старта + проверка выполнимости (п. 11.5 ТЗ)
+      var sched = RL_UTIL.scheduleFeasibility(format, startOffset);
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      document.getElementById("deadline-list").innerHTML = sched.deadlines.map(function (d) {
+        var late = d.date < today;
+        return "<li" + (late ? ' style="color:var(--red)"' : "") + "><span>" + d.stage + "</span><span>" +
+          d.date.toLocaleDateString("ru-RU") + (late ? " — срок прошёл" : "") + "</span></li>";
       }).join("");
+
+      var warnEl = document.getElementById("deadline-warning");
+      if (sched.feasible) {
+        warnEl.style.display = "none";
+      } else {
+        var opt = startSel.options[sched.earliestOffset];
+        warnEl.innerHTML = "Старт в выбранном месяце уже невозможен: " +
+          (sched.missed.length === 1 ? "срок «" + sched.missed[0].stage + "» прошёл" : "часть подготовительных сроков прошла") + "." +
+          (opt ? ' Ближайший доступный старт — <a href="#" id="deadline-fix">' + opt.textContent + "</a>." : "");
+        warnEl.style.display = "block";
+        var fix = document.getElementById("deadline-fix");
+        if (fix) {
+          fix.addEventListener("click", function (e) {
+            e.preventDefault();
+            startSel.value = String(sched.earliestOffset);
+            recalc();
+          });
+        }
+      }
     }
     startSel.addEventListener("change", recalc);
     monthsSel.addEventListener("change", recalc);
