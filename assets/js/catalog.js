@@ -18,6 +18,7 @@
     city: RL_UTIL.qs("city") || "",
     month: parseInt(RL_UTIL.qs("month") || "0", 10),
     dtype: RL_UTIL.qs("dtype") || "",
+    priceMax: parseFloat(RL_UTIL.qs("priceMax")) || 0,
     free: RL_UTIL.qs("free") === "1",
     sort: RL_UTIL.qs("sort") || "price-asc",
     view: RL_UTIL.qs("view") || "split"
@@ -31,6 +32,7 @@
     if (state.city) p.set("city", state.city);
     if (state.month) p.set("month", state.month);
     if (state.dtype) p.set("dtype", state.dtype);
+    if (state.priceMax) p.set("priceMax", state.priceMax);
     if (state.free) p.set("free", "1");
     if (state.sort !== "price-asc") p.set("sort", state.sort);
     if (state.view !== "split") p.set("view", state.view);
@@ -77,6 +79,10 @@
   var dtypeSel = document.getElementById("f-dtype");
   dtypeSel.value = state.dtype;
   dtypeSel.addEventListener("change", function () { state.dtype = dtypeSel.value; refresh(); });
+
+  var priceMaxInput = document.getElementById("f-price-max");
+  if (state.priceMax) priceMaxInput.value = state.priceMax;
+  priceMaxInput.addEventListener("input", function () { state.priceMax = parseFloat(priceMaxInput.value) || 0; refresh(); });
 
   var freeChk = document.getElementById("f-free");
   freeChk.checked = state.free;
@@ -186,6 +192,7 @@
       if (state.formats.length && state.formats.indexOf(item.format) === -1) return false;
       if (state.city && item.city !== state.city) return false;
       if (state.dtype && item.displayType !== state.dtype) return false;
+      if (state.priceMax && item.price > state.priceMax) return false;
       if (state.free) {
         var summary = availabilityFor(item, state.month);
         if (summary.free + summary.social === 0) return false;

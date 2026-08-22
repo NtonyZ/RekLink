@@ -210,13 +210,17 @@
     var endM = RL_OCC.monthList(1, Math.max.apply(null, ends))[0];
     var period = startM.label === endM.label ? startM.short : startM.short + "–" + endM.short;
     var grandTotal = items.reduce(function (sum, it) { return sum + priceFor(it).total; }, 0);
+    var orderItems = items.map(function (it) {
+      return { structureId: it.structureId, side: it.side ? it.side.code : null, format: it.format, title: it.title, city: it.city, startOffset: it.startOffset, months: it.months };
+    });
 
     RL_UTIL.ordersAdd({
       number: num,
       date: new Date().toISOString(),
       meta: cities.join(", ") + " · " + formats.join(", ") + " · " + items.length + (items.length === 1 ? " позиция" : " позиций") + " · " + period,
       total: grandTotal,
-      status: "new"
+      status: "new",
+      items: orderItems
     });
 
     RL_UTIL.mpClear();

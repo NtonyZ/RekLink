@@ -130,6 +130,45 @@
     window.location.href = "mediaplan.html";
   });
 
+  // ---- «Подобрать за меня»: заявка с бюджетом и задачей, без выбора площадок (п. 8.5.8 ТЗ) ----
+  document.getElementById("d-toggle").addEventListener("click", function () {
+    var form = document.getElementById("d-form");
+    form.style.display = form.style.display === "none" ? "block" : "none";
+  });
+
+  document.getElementById("d-submit").addEventListener("click", function () {
+    var name = document.getElementById("d-name").value.trim();
+    var phone = document.getElementById("d-phone").value.trim();
+    var email = document.getElementById("d-email").value.trim();
+    var task = document.getElementById("d-task").value.trim();
+    var consent = document.getElementById("d-consent").checked;
+    if (!name || !phone || !email) { alert("Заполните контактное лицо, телефон и e-mail."); return; }
+    if (!consent) { alert("Необходимо согласие на обработку персональных данных."); return; }
+
+    var budget = parseFloat(document.getElementById("c-budget").value) || 0;
+    var city = citySel.value || "любой город";
+    var months = parseInt(document.getElementById("c-months").value, 10);
+    var num = "RL-" + new Date().getFullYear() + "-" + String(Math.floor(1000 + Math.random() * 9000));
+
+    RL_UTIL.ordersAdd({
+      number: num,
+      date: new Date().toISOString(),
+      meta: "Бюджет " + RL_UTIL.money(budget) + " · " + city + " · " + months + " мес. · подбор площадок поручен менеджеру" + (task ? " · задача: " + task : ""),
+      total: budget,
+      status: "new",
+      items: []
+    });
+
+    document.getElementById("d-success").style.display = "block";
+    document.getElementById("d-success").textContent = "Заявка № " + num + " отправлена. Менеджер подберёт площадки под бюджет и свяжется с вами в течение 2 рабочих часов.";
+    document.getElementById("d-name").value = "";
+    document.getElementById("d-phone").value = "";
+    document.getElementById("d-email").value = "";
+    document.getElementById("d-task").value = "";
+    document.getElementById("d-comment").value = "";
+    document.getElementById("d-consent").checked = false;
+  });
+
   // ---- режим «от подборки» ---------------------------------------------------
   function renderSelectionPanel() {
     var mp = RL_UTIL.mpLoad();

@@ -80,6 +80,31 @@
       <button class="btn btn-gold mt-24" id="c-add-all">Добавить всё в медиаплан</button>
     </div>
     <div id="c-empty" class="disclaimer mt-24" style="display:none">По заданным условиям подходящих свободных мест не нашлось. Увеличьте бюджет, измените период или город.</div>
+
+    <div class="card mt-24" style="padding:24px">
+      <div class="flex-between" style="flex-wrap:wrap; gap:12px">
+        <div>
+          <h3 style="margin-bottom:4px">Не хотите выбирать сами?</h3>
+          <p class="muted text-sm" style="margin:0">Оставьте бюджет и задачу — менеджер подберёт площадки сам и свяжется с вами.</p>
+        </div>
+        <button class="btn btn-outline btn-sm" id="d-toggle">Оставить заявку без подбора площадок</button>
+      </div>
+      <div id="d-form" style="display:none; margin-top:20px">
+        <div class="calc-form-grid">
+          <div class="field"><label>Контактное лицо</label><input id="d-name" placeholder="Имя"></div>
+          <div class="field"><label>Телефон</label><input id="d-phone" placeholder="+375 (29) 000-00-00"></div>
+          <div class="field"><label>Электронная почта</label><input id="d-email" type="email" placeholder="mail@example.by"></div>
+          <div class="field"><label>Задача</label><input id="d-task" placeholder="Например: запуск нового магазина"></div>
+        </div>
+        <div class="field"><label>Комментарий</label><textarea id="d-comment" rows="2" placeholder="Дополнительные пожелания к подбору"></textarea></div>
+        <label class="flex gap-8" style="align-items:flex-start; font-size:12.5px">
+          <input type="checkbox" id="d-consent" style="margin-top:3px">
+          <span>Согласен(на) на обработку персональных данных в соответствии с <a href="info.html#privacy">политикой обработки</a></span>
+        </label>
+        <button class="btn btn-primary mt-24" id="d-submit">Отправить заявку</button>
+        <div id="d-success" class="disclaimer mt-24" style="display:none"></div>
+      </div>
+    </div>
   </div>
 
   <div id="panel-selection" class="card" style="padding:28px; display:none">

@@ -9,10 +9,24 @@
 .cab-tabs { display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:28px; }
 .cab-tabs button { padding:12px 18px; border:none; background:none; font-weight:600; font-size:14px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; }
 .cab-tabs button.active { color:var(--violet); border-color:var(--violet); }
-.order-row { display:flex; align-items:center; gap:16px; padding:16px; border:1px solid var(--line); border-radius:var(--radius-sm); margin-bottom:12px; }
+.order-card { border:1px solid var(--line); border-radius:var(--radius-sm); margin-bottom:12px; overflow:hidden; }
+.order-row { display:flex; align-items:center; gap:16px; padding:16px; cursor:pointer; }
 .order-row .n { font-weight:700; width:110px; }
 .order-row .meta { flex:1; font-size:13px; color:var(--muted); }
-.status-pill { padding:5px 12px; border-radius:99px; font-size:12px; font-weight:600; }
+.order-row .chev { color:var(--muted); transition:transform .15s; flex-shrink:0; }
+.order-row.open .chev { transform:rotate(90deg); }
+.status-pill { padding:5px 12px; border-radius:99px; font-size:12px; font-weight:600; white-space:nowrap; }
+.order-detail { display:none; padding:0 16px 18px; border-top:1px solid var(--line); }
+.order-detail.open { display:block; }
+.od-section { margin-top:14px; }
+.od-section h5 { font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:8px; }
+.od-item { font-size:13.5px; padding:6px 0; border-bottom:1px dashed var(--line); }
+.od-item:last-child { border-bottom:none; }
+.timeline { display:flex; flex-wrap:wrap; gap:4px; }
+.timeline .step { font-size:11px; padding:4px 8px; border-radius:99px; background:var(--bg-soft); color:var(--muted); }
+.timeline .step.done { background:#e7f7ec; color:#1f9d55; }
+.timeline .step.current { background:var(--violet); color:#fff; font-weight:600; }
+.renewal-banner { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; background:#fff6de; border:1px solid #f0d98a; padding:14px 18px; font-size:13.5px; }
 .doc-row { display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--line); font-size:13.5px; }
 </style>
 </head>
@@ -36,26 +50,8 @@
   </div>
 
   <div id="tab-orders">
-    <div id="live-orders"></div>
-    <div class="order-row">
-      <span class="n">№ 2026-041</span>
-      <span class="meta">Замковая, 19 · медиа-постер · 3 позиции · авг–окт 2026</span>
-      <span class="status-pill" style="background:#e7f7ec;color:#1f9d55">live — размещение активно</span>
-      <b>1 170,00 BYN</b>
-    </div>
-    <div class="order-row">
-      <span class="n">№ 2026-038</span>
-      <span class="meta">Кирова, 12 · динамический скроллер · 1 позиция · июль 2026</span>
-      <span class="status-pill" style="background:#fff6de;color:#9a6b00">closing — закрытие месяца</span>
-      <b>330,00 BYN</b>
-    </div>
-    <div class="order-row">
-      <span class="n">№ 2026-025</span>
-      <span class="meta">Строителей, 15В (ТРИО) · медиа-постер · 2 позиции · май–июнь 2026</span>
-      <span class="status-pill" style="background:#eef; color:var(--violet)">completed — завершён</span>
-      <b>780,00 BYN</b>
-    </div>
-    <p class="text-sm muted mt-24">Статусы соответствуют жизненному циклу заказа из раздела 11.2 ТЗ: new → qualified → protocol → awaiting_payment → paid → creative → production → mounting → live → closing → completed.</p>
+    <div id="orders-list"></div>
+    <p class="text-sm muted mt-24">Статусы соответствуют жизненному циклу заказа из раздела 11.2 ТЗ: new → qualified → protocol → awaiting_payment → paid → creative → production → mounting → live → closing → completed. Нажмите на заказ, чтобы увидеть состав, документы и историю.</p>
   </div>
 
   <div id="tab-docs" style="display:none">
@@ -77,6 +73,7 @@
       <div class="field"><label>УНП</label><input value="191234567" disabled></div>
       <div class="field"><label>Контактное лицо</label><input value="Иван Иванов" disabled></div>
       <div class="field"><label>Телефон</label><input value="+375 (29) 123-45-67" disabled></div>
+      <div class="field"><label>Адрес доставки документов</label><input value="210001, г. Витебск, ул. Смоленская, 10, офис 305" disabled></div>
       <div class="field"><label>Персональная скидка</label><input value="5%" disabled></div>
     </div>
   </div>
@@ -99,18 +96,140 @@ document.querySelectorAll(".cab-tabs button").forEach(function (btn) {
     });
   });
 });
-var liveOrders = RL_UTIL.ordersLoad();
-document.getElementById("live-orders").innerHTML = liveOrders.map(function (o) {
-  return '<div class="order-row">' +
-    '<span class="n">' + RL_UTIL.escapeHtml(o.number) + "</span>" +
-    '<span class="meta">' + RL_UTIL.escapeHtml(o.meta) + "</span>" +
-    '<span class="status-pill" style="background:#eef2ff;color:#3b4fd6">new — заявка получена</span>' +
-    "<b>" + RL_UTIL.money(o.total) + "</b>" +
-  "</div>";
-}).join("");
+
+// Жизненный цикл заказа — раздел 11.2 ТЗ
+var STATUS_FLOW = ["new", "qualified", "protocol", "awaiting_payment", "paid", "creative", "production", "mounting", "live", "closing", "completed"];
+var STATUS_LABELS = {
+  new: "новая заявка", qualified: "квалифицирована", protocol: "счёт-протокол",
+  awaiting_payment: "ожидает оплаты", paid: "оплачен", creative: "приём макета",
+  production: "производство", mounting: "монтаж", live: "размещение активно",
+  closing: "закрытие месяца", completed: "завершён"
+};
+var STATUS_COLORS = {
+  new: ["#eef2ff", "#3b4fd6"], qualified: ["#eef2ff", "#3b4fd6"], protocol: ["#eef2ff", "#3b4fd6"],
+  awaiting_payment: ["#fff6de", "#9a6b00"], paid: ["#fff6de", "#9a6b00"], creative: ["#fff6de", "#9a6b00"],
+  production: ["#fff6de", "#9a6b00"], mounting: ["#fff6de", "#9a6b00"],
+  live: ["#e7f7ec", "#1f9d55"], closing: ["#fff6de", "#9a6b00"], completed: ["#eef", "#3b2a98"]
+};
+
+// Демонстрационные заказы прошлых периодов; позиции ссылаются на реальные конструкции каталога,
+// поэтому «Повторить заказ» кладёт настоящие площадки в медиаплан.
+var DEMO_ORDERS = [
+  {
+    number: "№ 2026-041", total: 1170, status: "live",
+    meta: "Замковая, 19 · медиа-постер · авг–окт 2026",
+    items: [{ structureId: "S6", side: "A", format: "media_poster", city: "Витебск", title: "Замковая, 19 (Универмаг)", months: 3 }],
+    documents: [{ name: "Счёт-протокол № 2026-041", date: "28.07.2026", state: "подписан" }],
+    renewalDue: true, renewalDate: "30.09.2026"
+  },
+  {
+    number: "№ 2026-038", total: 330, status: "closing",
+    meta: "Кирова, 12 · динамический скроллер · июль 2026",
+    items: [{ structureId: "S11", side: "A", format: "poster_dynamic", city: "Витебск", title: "Кирова, 12 (ЛиЛия)", months: 1 }],
+    documents: [{ name: "Акт оказанных услуг № 2026-038", date: "31.07.2026", state: "на подписи" }]
+  },
+  {
+    number: "№ 2026-025", total: 780, status: "completed",
+    meta: "Строителей, 15В (ТРИО) · медиа-постер · май–июнь 2026",
+    items: [{ structureId: "S43", side: "A", format: "media_poster", city: "Витебск", title: "Строителей пр-т, 15В (ТЦ «ТРИО»)", months: 2 }],
+    documents: [{ name: "Справка-расчёт по сбору за II квартал 2026", date: "10.07.2026" }]
+  }
+];
+
+var liveOrders = RL_UTIL.ordersLoad().map(function (o) { return Object.assign({}, o, { status: o.status || "new" }); });
+var ORDER_MAP = {};
+liveOrders.forEach(function (o, i) { ORDER_MAP["live-" + i] = o; });
+DEMO_ORDERS.forEach(function (o, i) { ORDER_MAP["demo-" + i] = o; });
+
+function renderOrderCard(o, key) {
+  var colors = STATUS_COLORS[o.status] || ["#eef", "#333"];
+  var stepIdx = STATUS_FLOW.indexOf(o.status);
+  var flowHtml = STATUS_FLOW.map(function (s, i) {
+    var cls = "step" + (i < stepIdx ? " done" : i === stepIdx ? " current" : "");
+    return '<span class="' + cls + '">' + STATUS_LABELS[s] + "</span>";
+  }).join("");
+
+  var itemsHtml = (o.items || []).map(function (it) {
+    var fmt = RL.formats[it.format];
+    return '<div class="od-item">' + RL_UTIL.escapeHtml(it.city) + " · " + RL_UTIL.escapeHtml(it.title) +
+      (it.side ? " · сторона " + it.side : "") + " · " + (fmt ? fmt.shortTitle : it.format) +
+      (it.months ? " · " + it.months + " мес." : "") + "</div>";
+  }).join("") || '<div class="od-item muted">Состав заказа не указан.</div>';
+
+  var docsHtml = (o.documents || []).map(function (d) {
+    return '<div class="od-item"><b>' + RL_UTIL.escapeHtml(d.name) + "</b> — " + RL_UTIL.escapeHtml(d.date) + (d.state ? " · " + RL_UTIL.escapeHtml(d.state) : "") + "</div>";
+  }).join("") || '<div class="od-item muted">Документов пока нет.</div>';
+
+  var repeatBtn = o.status === "completed" ? '<button class="btn btn-outline btn-sm" data-repeat="' + key + '">Повторить заказ</button>' : "";
+
+  var renewalHtml = o.renewalDue
+    ? '<div class="renewal-banner" id="renewal-' + key + '">' +
+        "<span>Срок текущего размещения истекает " + o.renewalDate + ". Продлить на тот же период?</span>" +
+        '<span class="flex gap-8"><button class="btn btn-primary btn-sm" data-renew-confirm="' + key + '">Подтвердить продление</button>' +
+        '<button class="btn btn-ghost btn-sm" data-renew-decline="' + key + '">Отказаться</button></span>' +
+      "</div>"
+    : "";
+
+  return (
+    '<div class="order-card">' +
+      renewalHtml +
+      '<div class="order-row" data-toggle="' + key + '">' +
+        '<span class="n">' + RL_UTIL.escapeHtml(o.number) + "</span>" +
+        '<span class="meta">' + RL_UTIL.escapeHtml(o.meta) + "</span>" +
+        '<span class="status-pill" style="background:' + colors[0] + ";color:" + colors[1] + '">' + o.status + " — " + STATUS_LABELS[o.status] + "</span>" +
+        "<b>" + RL_UTIL.money(o.total) + "</b>" +
+        '<span class="chev">›</span>' +
+      "</div>" +
+      '<div class="order-detail" id="detail-' + key + '">' +
+        '<div class="od-section"><h5>Состав</h5>' + itemsHtml + "</div>" +
+        '<div class="od-section"><h5>Документы</h5>' + docsHtml + "</div>" +
+        '<div class="od-section"><h5>История статуса</h5><div class="timeline">' + flowHtml + "</div></div>" +
+        (repeatBtn ? '<div class="od-section">' + repeatBtn + "</div>" : "") +
+      "</div>" +
+    "</div>"
+  );
+}
+
+function renderOrders() {
+  var html = liveOrders.map(function (o, i) { return renderOrderCard(o, "live-" + i); }).join("") +
+    DEMO_ORDERS.map(function (o, i) { return renderOrderCard(o, "demo-" + i); }).join("");
+  document.getElementById("orders-list").innerHTML = html;
+}
+renderOrders();
+
 if (liveOrders.length) {
   document.querySelector('[data-tab="orders"]').textContent = "Заказы (" + liveOrders.length + " " + (liveOrders.length === 1 ? "новый" : "новых") + ")";
 }
+
+document.getElementById("orders-list").addEventListener("click", function (e) {
+  var repeatBtn = e.target.closest("[data-repeat]");
+  if (repeatBtn) {
+    var order = ORDER_MAP[repeatBtn.getAttribute("data-repeat")];
+    (order.items || []).forEach(function (it) {
+      RL_UTIL.mpAdd({ structureId: it.structureId, side: it.side, format: it.format, title: it.title, city: it.city, startOffset: 0, months: it.months || 1, addedAt: Date.now() });
+    });
+    window.location.href = "mediaplan.html";
+    return;
+  }
+  var confirmBtn = e.target.closest("[data-renew-confirm]");
+  if (confirmBtn) {
+    document.getElementById("renewal-" + confirmBtn.getAttribute("data-renew-confirm")).innerHTML =
+      "<span>Продление подтверждено. Менеджер выставит счёт-протокол на новый период.</span>";
+    return;
+  }
+  var declineBtn = e.target.closest("[data-renew-decline]");
+  if (declineBtn) {
+    document.getElementById("renewal-" + declineBtn.getAttribute("data-renew-decline")).innerHTML =
+      "<span>Отказ принят. Размещение завершится по плану, автопродления не будет.</span>";
+    return;
+  }
+  var toggle = e.target.closest("[data-toggle]");
+  if (toggle) {
+    var key = toggle.getAttribute("data-toggle");
+    document.getElementById("detail-" + key).classList.toggle("open");
+    toggle.classList.toggle("open");
+  }
+});
 
 document.getElementById("reports-grid").innerHTML = [1, 2, 3].map(function (i) {
   return '<div class="card" style="padding:16px">' + RL_UTIL.photoPlaceholder("Фотоотчёт монтажа №" + i, "poster_dynamic", { height: "140px" }) +
