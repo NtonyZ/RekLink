@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Медиаплан и заявка — RekLink.by</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+.mp-grid { display:grid; grid-template-columns:1fr 380px; gap:32px; align-items:start; }
+.mp-item { display:flex; gap:14px; padding:16px; border:1px solid var(--line); border-radius:var(--radius-sm); margin-bottom:12px; }
+.mp-item .info { flex:1; min-width:0; }
+.mp-item .info h4 { font-size:14.5px; margin:0 0 4px; }
+.mp-item .meta { font-size:12.5px; color:var(--muted); margin-bottom:8px; }
+.mp-item select { padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); font-size:12.5px; }
+.mp-item .price { font-weight:700; font-size:14px; white-space:nowrap; }
+.mp-item .remove { color:var(--red); font-size:12.5px; cursor:pointer; background:none; border:none; padding:0; margin-top:8px; }
+#mp-map { height:280px; border-radius:var(--radius); margin:20px 0; }
+.summary-panel { position:sticky; top:96px; padding:24px; }
+.summary-line { display:flex; justify-content:space-between; font-size:13.5px; padding:6px 0; }
+.summary-line.total { font-weight:700; font-size:17px; border-top:1px solid var(--line); margin-top:8px; padding-top:12px; }
+.empty-cart { text-align:center; padding:80px 20px; color:var(--muted); }
+.step-badge { width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-right:8px; }
+@media print {
+  .site-header, .site-footer, .no-print, .mp-item .remove, .mp-item select { display:none !important; }
+  .mp-grid { grid-template-columns:1fr; }
+  body { color:#000; }
+}
+@media (max-width: 980px) { .mp-grid { grid-template-columns:1fr; } .summary-panel { position:static; } }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Перейти к содержимому</a>
+<header id="site-header" class="site-header no-print"></header>
+
+<main id="main" class="container" style="padding:32px 24px 60px">
+  <h1>Медиаплан</h1>
+  <p class="muted mb-24">Собранная подборка площадок: стоимость, совокупный охват и заявка на размещение.</p>
+
+  <div id="mp-empty" style="display:none" class="empty-cart">
+    <h3>Медиаплан пуст</h3>
+    <p>Добавляйте площадки из <a href="catalog.html">каталога</a> или карты кнопкой «В медиаплан».</p>
+    <a href="catalog.html" class="btn btn-primary mt-24">Перейти в каталог</a>
+  </div>
+
+  <div id="mp-content">
+    <div class="mp-grid">
+      <div>
+        <div id="mp-items"></div>
+
+        <h3 class="mt-40">Карта размещений</h3>
+        <div id="mp-map"></div>
+
+        <div class="card" style="padding:20px 24px; margin-top:20px">
+          <div class="flex-between" style="flex-wrap:wrap; gap:10px">
+            <div>
+              <b>Совокупный охват подборки</b>
+              <div class="text-sm muted" id="mp-reach-note">—</div>
+            </div>
+            <div id="mp-reach-numbers" style="text-align:right"></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card summary-panel no-print">
+          <h3>Итог</h3>
+          <div id="summary-lines"></div>
+          <button class="btn btn-outline btn-block mt-24" id="btn-pdf">Скачать PDF (печать)</button>
+          <a href="#apply-form" class="btn btn-primary btn-block mt-24">Оформить заявку</a>
+          <p class="text-sm muted mt-24" id="mp-saved-note"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-40 no-print" id="apply-form" style="padding:32px; max-width:640px; margin-left:auto; margin-right:auto">
+      <h3><span class="step-badge">✓</span>Оформление заявки</h3>
+      <p class="text-sm muted">После отправки выбранные позиции резервируются на срок, установленный справочником (по умолчанию — до 48 часов), до подписания счёта-протокола.</p>
+      <div class="field-row">
+        <div class="field"><label>Контактное лицо</label><input type="text" id="f-name" placeholder="Имя Фамилия" required></div>
+        <div class="field"><label>Телефон</label><input type="tel" id="f-phone" placeholder="+375 (29) 000-00-00" required></div>
+      </div>
+      <div class="field"><label>Электронная почта</label><input type="email" id="f-email" placeholder="you@company.by" required></div>
+      <div class="field">
+        <label>Тип плательщика</label>
+        <select id="f-payer">
+          <option value="legal">Юридическое лицо</option>
+          <option value="entrepreneur">Индивидуальный предприниматель</option>
+          <option value="person">Физическое лицо</option>
+        </select>
+      </div>
+      <div class="field-row" id="f-unp-row">
+        <div class="field"><label>УНП</label><input type="text" id="f-unp" placeholder="Например, 391234567"></div>
+        <div class="field"><label>Наименование</label><input type="text" id="f-company" placeholder="Определится по УНП"></div>
+      </div>
+      <div class="field"><label>Комментарий к заявке</label><textarea id="f-comment" rows="3" placeholder="Особые пожелания к кампании"></textarea></div>
+
+      <div class="disclaimer mb-24" id="approval-note" style="display:none">Часть выбранных площадок относится к наружной рекламе — содержание подлежит согласованию с исполкомом (п. 12.2 ТЗ). Порядок согласования уточнит менеджер.</div>
+
+      <div class="checkbox-row"><input type="checkbox" id="f-consent-pd" required><label for="f-consent-pd">Согласен(на) на обработку персональных данных в соответствии с <a href="info.html#privacy" target="_blank">политикой обработки</a></label></div>
+      <div class="checkbox-row"><input type="checkbox" id="f-consent-mk"><label for="f-consent-mk">Согласен(на) на получение информационных рассылок</label></div>
+      <p class="text-sm muted">Отправляя заявку, вы принимаете условия <a href="info.html#offer" target="_blank">публичной оферты</a>.</p>
+
+      <button class="btn btn-primary btn-block mt-24" id="btn-submit">Отправить заявку</button>
+      <p class="text-sm muted text-center mt-24">Прототип: заявка не передаётся на реальный сервер, а только демонстрирует сценарий.</p>
+    </div>
+
+    <div class="card mt-40" id="apply-success" style="display:none; padding:40px; text-align:center; max-width:640px; margin-left:auto; margin-right:auto; background:var(--bg-soft)">
+      <h3>Заявка принята</h3>
+      <p class="muted">Номер заявки <b id="success-number"></b>. Менеджер свяжется в течение 2 рабочих часов (п. 11.2 ТЗ, статус «new»). Позиции зарезервированы.</p>
+      <a href="index.html" class="btn btn-primary mt-24">На главную</a>
+    </div>
+  </div>
+</main>
+
+<footer id="site-footer" class="site-footer no-print"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/occupancy.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/mediaplan.js"></script>
+</body>
+</html>

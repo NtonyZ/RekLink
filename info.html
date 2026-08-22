@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Информация — RekLink.by</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.info-layout { display:grid; grid-template-columns:220px 1fr; gap:40px; align-items:start; }
+.info-nav { position:sticky; top:96px; }
+.info-nav a { display:block; padding:8px 0; font-size:13.5px; color:var(--muted); border-left:2px solid transparent; padding-left:12px; }
+.info-nav a:hover, .info-nav a.active { color:var(--violet); border-color:var(--violet); }
+.info-section { padding-bottom:56px; margin-bottom:16px; border-bottom:1px solid var(--line); }
+.info-section:last-child { border-bottom:none; }
+.info-section h2 { font-size:22px; margin-bottom:16px; }
+.req-table { width:100%; border-collapse:collapse; font-size:13px; margin:16px 0; }
+.req-table th, .req-table td { padding:8px 10px; border:1px solid var(--line); text-align:left; }
+.req-table th { background:var(--bg-soft); }
+.draft-flag { background:#fff6de; border:1px solid #f0d98a; border-radius:var(--radius-sm); padding:10px 14px; font-size:12.5px; color:#7a5b00; margin-bottom:16px; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Перейти к содержимому</a>
+<header id="site-header" class="site-header"></header>
+
+<main id="main" class="container" style="padding:32px 24px 60px">
+  <h1>Информация</h1>
+  <p class="muted mb-40">Требования к материалам, порядок работы и правовые документы портала.</p>
+
+  <div class="info-layout">
+    <nav class="info-nav">
+      <a href="#materials">Требования к макетам</a>
+      <a href="#process">Порядок работы</a>
+      <a href="#offer">Публичная оферта</a>
+      <a href="#privacy">Обработка персональных данных</a>
+      <a href="#fee">Сбор за размещение рекламы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+
+    <div>
+      <section class="info-section" id="materials">
+        <h2>Требования к макетам и роликам</h2>
+        <table class="req-table">
+          <tr><th>Формат</th><th>Материал</th><th>Требования</th></tr>
+          <tr><td>Скроллер (статичный и прокрутка)</td><td>Плакат на плёнке Backlit</td><td>Плотность 120–150 мкм, макет предоставляется не менее чем за 3 рабочих дня до старта</td></tr>
+          <tr><td>Медиа-постер</td><td>Видеоролик</td><td>Формат и хронометраж по спецификации носителя, не менее чем за 5 рабочих дней до старта</td></tr>
+          <tr><td>LED-экран 6×3, видеопанели</td><td>Видеоролик</td><td>Длительность 10–30 секунд согласно справочнику формата</td></tr>
+        </table>
+        <p class="text-sm muted">После загрузки материал автоматически проверяется на соответствие техническим требованиям; при отклонении система указывает конкретную причину (п. 9.4–9.5 ТЗ).</p>
+      </section>
+
+      <section class="info-section" id="process">
+        <h2>Порядок работы</h2>
+        <ol style="padding-left:20px; font-size:14px; color:var(--ink)">
+          <li>Выбор площадок в каталоге, на карте или через калькулятор бюджета.</li>
+          <li>Формирование медиаплана и заявки на сайте.</li>
+          <li>Счёт-протокол — основной документ кампании, подписывается не позднее чем за 5 дней до старта.</li>
+          <li>100% предоплата; размещение переходит в производство после подтверждения оплаты.</li>
+          <li>Приём и проверка макета или ролика, при необходимости — согласование содержания.</li>
+          <li>Печать/подготовка, монтаж, трансляция; фотоотчёт доступен в личном кабинете.</li>
+          <li>Акт оказанных услуг по итогам месяца.</li>
+        </ol>
+      </section>
+
+      <section class="info-section" id="offer">
+        <h2>Публичная оферта</h2>
+        <div class="draft-flag">Черновик для демонстрации сценария. Юридический текст оферты готовится и утверждается компанией отдельно, перед запуском в эксплуатацию (шаблон редактируется администратором, п. 11.4 ТЗ).</div>
+        <p class="text-sm">Настоящий документ является публичной офертой ЧПУП «ФОРУСультра» на оказание услуг по размещению рекламных материалов на рекламных конструкциях, указанных в разделе 3 технического задания. Акцептом оферты является оформление заявки на портале RekLink.by либо подписание счёта-протокола. НДС не облагается.</p>
+      </section>
+
+      <section class="info-section" id="privacy">
+        <h2>Политика обработки персональных данных</h2>
+        <div class="draft-flag">Черновик для демонстрации сценария, требует утверждения ответственным за внутренний контроль обработки персональных данных перед запуском.</div>
+        <p class="text-sm">Обработка персональных данных осуществляется в соответствии с Законом Республики Беларусь от 07.05.2021 № 99-З «О защите персональных данных». Согласия на оказание услуг, информационные рассылки и аналитику поведения запрашиваются раздельно и не преформлены. Субъект персональных данных вправе получить сведения о своих данных, изменить их, отозвать согласие и потребовать удаления, обратившись на <a href="mailto:info@forus.by">info@forus.by</a>.</p>
+      </section>
+
+      <section class="info-section" id="fee">
+        <h2>Сбор за размещение (распространение) рекламы</h2>
+        <p class="text-sm">Установлен Указом Президента Республики Беларусь от 31.03.2022 № 131. Плательщик — рекламодатель. Ставка 10% для наружной рекламы (скроллеры, медиа-постеры, LED-экраны) и 20% для видеорекламы в помещениях. База — стоимость услуг без НДС. Компания рассчитывает и отображает сумму справочно, но не удерживает и не перечисляет её.</p>
+      </section>
+
+      <section class="info-section" id="contacts">
+        <h2>Контакты</h2>
+        <p class="text-sm" id="contacts-text"></p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/occupancy.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+RL_LAYOUT.render("");
+document.getElementById("contacts-text").innerHTML = RL.seller.title + ", " + RL.seller.address + ". Телефон " + RL.seller.phone + ", e-mail " + RL.seller.email + ". Режим работы: " + RL.seller.workHours + ".";
+</script>
+</body>
+</html>

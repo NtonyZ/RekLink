@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Форматы рекламы — RekLink.by</title>
+<meta name="description" content="Чем отличается статичный плакат от динамического скроллера, медиа-постера, LED-экрана и видеопанелей — и как это влияет на цену и охват.">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.fmt-block { display:grid; grid-template-columns:180px 1fr; gap:32px; padding:40px 0; border-bottom:1px solid var(--line); }
+.fmt-block:last-child { border-bottom:none; }
+.fmt-icon { width:96px; height:96px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:40px; color:#fff; }
+.fmt-block h2 { font-size:22px; margin-bottom:8px; }
+.fmt-facts { display:flex; gap:24px; flex-wrap:wrap; margin:16px 0; }
+.fmt-facts .f b { display:block; font-size:17px; }
+.fmt-facts .f span { font-size:12px; color:var(--muted); }
+.insight { background:var(--bg-soft); border-left:3px solid var(--gold); border-radius:0 var(--radius-sm) var(--radius-sm) 0; padding:14px 18px; font-size:13.5px; margin-top:14px; }
+table.rate-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:14px; }
+table.rate-table th, table.rate-table td { padding:8px 10px; border:1px solid var(--line); text-align:center; }
+table.rate-table th { background:var(--bg-soft); }
+table.rate-table td:first-child, table.rate-table th:first-child { text-align:left; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Перейти к содержимому</a>
+<header id="site-header" class="site-header"></header>
+
+<main id="main">
+  <section class="hero" style="padding:56px 0">
+    <div class="container inner">
+      <span class="eyebrow" style="background:rgba(255,255,255,.15); color:#fff">Раздел 8.2 ТЗ</span>
+      <h1 style="max-width:700px">Форматы рекламы: что именно вы покупаете</h1>
+      <p class="lead">Статичные позиции продаются вдвое хуже динамических при одинаковой цене — потому что клиент не всегда понимает разницу. Здесь она объяснена наглядно.</p>
+    </div>
+  </section>
+
+  <div class="container" id="fmt-list" style="padding:20px 0"></div>
+
+  <section class="section section-soft">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Тариф</span>
+        <h2>Светодиодные экраны 6×3 м</h2>
+        <p>Цена за один экран. Поддерживаются помесячная и посуточная продажа, режим работы 06:00–24:00.</p>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="rate-table" id="led-rate-table"></table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Приложение Б ТЗ</span>
+        <h2>Видеопанели в помещениях</h2>
+        <p>Экраны в прикассовых зонах гипермаркетов и торговых сетей — контакт с покупателем в момент принятия решения.</p>
+      </div>
+      <div class="grid-3" id="indoor-networks"></div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/occupancy.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+RL_LAYOUT.render("formats.html");
+
+var INSIGHTS = {
+  poster_static: "Разбор адресной программы показывает: статичный плакат загружен всего на 17–28% в высокий сезон при 101 позиции в городе — это главный резерв продаж, а не медиа-постеры.",
+  poster_dynamic: "Динамический скроллер составляет большую часть инвентаря (127 из 264 позиций). В карточке позиции обязательно указывается доля времени показа: 1, делённая на число позиций в стороне.",
+  media_poster: "Медиа-постеры фактически распроданы (до 83% в июле) — это дефицитный формат. Свободные позиции стоит предлагать клиенту заранее.",
+  led_screen: "Тарификация зависит от частоты выхода и длительности ролика — гибче, чем помесячная аренда плаката.",
+  indoor: "Наружной рекламой не является — ставка сбора за размещение 20%, а не 10%."
+};
+
+var FACTS = {
+  poster_static: [["100%", "времени виден плакат"], ["330 BYN", "аренда/мес"], ["105 BYN", "печать постера"]],
+  poster_dynamic: [["1/N", "доля цикла показа"], ["330 BYN", "аренда/мес"], ["105 BYN", "печать постера"]],
+  media_poster: [["Видео", "вместо печати"], ["390 BYN", "аренда/мес"], ["25 BYN", "доп. ротация ролика"]],
+  led_screen: [["6×3 м", "размер экрана"], ["850+ BYN", "от, за месяц"], ["06:00–24:00", "режим работы"]],
+  indoor: [["24", "объекта в сети"], ["3", "сети партнёров"], ["20%", "ставка сбора"]]
+};
+
+(function () {
+  var order = ["poster_static", "poster_dynamic", "media_poster", "led_screen", "indoor"];
+  var icons = { poster_static: "🖼", poster_dynamic: "🔄", media_poster: "📺", led_screen: "🖥", indoor: "📶" };
+  document.getElementById("fmt-list").innerHTML = order.map(function (code) {
+    var f = RL.formats[code];
+    var facts = FACTS[code].map(function (x) { return '<div class="f"><b>' + x[0] + "</b><span>" + x[1] + "</span></div>"; }).join("");
+    var catalogLink = code === "indoor" ? "" : '<a href="catalog.html?format=' + code + '" class="btn btn-outline btn-sm mt-24">Смотреть свободные места →</a>';
+    return (
+      '<div class="fmt-block" id="' + code + '">' +
+        '<div class="fmt-icon" style="background:' + f.color + '">' + icons[code] + "</div>" +
+        "<div>" +
+          "<h2>" + f.title + "</h2>" +
+          "<p class='muted'>" + f.description + "</p>" +
+          '<div class="fmt-facts">' + facts + "</div>" +
+          '<div class="insight">' + INSIGHTS[code] + "</div>" +
+          catalogLink +
+        "</div>" +
+      "</div>"
+    );
+  }).join("");
+})();
+
+(function () {
+  var rows = RL.ledScreenRates;
+  var head = "<tr><th>Частота показа</th><th>Выходов, день/мес</th><th>10 сек, мес.</th><th>15 сек, мес.</th><th>20 сек, мес.</th><th>10 сек, сутки</th><th>15 сек, сутки</th><th>20 сек, сутки</th></tr>";
+  var body = rows.map(function (r) {
+    return "<tr><td>" + r.freq + "</td><td>" + r.perDay + " / " + r.perMonth + "</td>" +
+      "<td>" + r.month.s10 + "</td><td>" + r.month.s15 + "</td><td>" + r.month.s20 + "</td>" +
+      "<td>" + r.day.s10 + "</td><td>" + r.day.s15 + "</td><td>" + r.day.s20 + "</td></tr>";
+  }).join("");
+  document.getElementById("led-rate-table").innerHTML = head + body;
+})();
+
+(function () {
+  document.getElementById("indoor-networks").innerHTML = RL.indoorNetworks.map(function (n) {
+    return (
+      '<div class="card" style="padding:22px">' +
+        "<h3>" + n.title + "</h3>" +
+        '<p class="text-sm muted">' + n.objects + " объектов · " + n.cities.join(", ") + "</p>" +
+        '<div class="divider"></div>' +
+        '<div class="text-sm"><b>2,5 мин:</b> ' + n.rate25.join(" / ") + " BYN</div>" +
+        '<div class="text-sm"><b>5 мин:</b> ' + n.rate5.join(" / ") + " BYN</div>" +
+        '<p class="text-sm muted mt-24">Цена за 15/20/30 сек ролика.</p>' +
+      "</div>"
+    );
+  }).join("");
+})();
+</script>
+</body>
+</html>

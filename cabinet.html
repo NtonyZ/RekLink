@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Личный кабинет — RekLink.by</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.cab-tabs { display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:28px; }
+.cab-tabs button { padding:12px 18px; border:none; background:none; font-weight:600; font-size:14px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; }
+.cab-tabs button.active { color:var(--violet); border-color:var(--violet); }
+.order-row { display:flex; align-items:center; gap:16px; padding:16px; border:1px solid var(--line); border-radius:var(--radius-sm); margin-bottom:12px; }
+.order-row .n { font-weight:700; width:110px; }
+.order-row .meta { flex:1; font-size:13px; color:var(--muted); }
+.status-pill { padding:5px 12px; border-radius:99px; font-size:12px; font-weight:600; }
+.doc-row { display:flex; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--line); font-size:13.5px; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Перейти к содержимому</a>
+<header id="site-header" class="site-header"></header>
+
+<main id="main" class="container" style="padding:32px 24px 60px">
+  <div class="disclaimer mb-24">Иллюстративный макет личного кабинета с демонстрационными данными (раздел 9 ТЗ). Регистрация по номеру телефона, реальная авторизация и загрузка файлов в этом прототипе не реализованы.</div>
+
+  <div class="flex-between" style="flex-wrap:wrap; gap:12px">
+    <h1>Личный кабинет</h1>
+    <div class="muted text-sm">ООО «Клиент Демо» · УНП 191234567</div>
+  </div>
+
+  <div class="cab-tabs">
+    <button class="active" data-tab="orders">Заказы</button>
+    <button data-tab="docs">Документы</button>
+    <button data-tab="reports">Фотоотчёты</button>
+    <button data-tab="profile">Профиль</button>
+  </div>
+
+  <div id="tab-orders">
+    <div class="order-row">
+      <span class="n">№ 2026-041</span>
+      <span class="meta">Замковая, 19 · медиа-постер · 3 позиции · авг–окт 2026</span>
+      <span class="status-pill" style="background:#e7f7ec;color:#1f9d55">live — размещение активно</span>
+      <b>1 170,00 BYN</b>
+    </div>
+    <div class="order-row">
+      <span class="n">№ 2026-038</span>
+      <span class="meta">Кирова, 12 · динамический скроллер · 1 позиция · июль 2026</span>
+      <span class="status-pill" style="background:#fff6de;color:#9a6b00">closing — закрытие месяца</span>
+      <b>330,00 BYN</b>
+    </div>
+    <div class="order-row">
+      <span class="n">№ 2026-025</span>
+      <span class="meta">Строителей, 15В (ТРИО) · медиа-постер · 2 позиции · май–июнь 2026</span>
+      <span class="status-pill" style="background:#eef; color:var(--violet)">completed — завершён</span>
+      <b>780,00 BYN</b>
+    </div>
+    <p class="text-sm muted mt-24">Статусы соответствуют жизненному циклу заказа из раздела 11.2 ТЗ: new → qualified → protocol → awaiting_payment → paid → creative → production → mounting → live → closing → completed.</p>
+  </div>
+
+  <div id="tab-docs" style="display:none">
+    <div class="card">
+      <div class="doc-row"><span>Счёт-протокол № 2026-041</span><span class="muted">от 28.07.2026 · подписан</span></div>
+      <div class="doc-row"><span>Акт оказанных услуг № 2026-038</span><span class="muted">от 31.07.2026 · на подписи</span></div>
+      <div class="doc-row"><span>Справка-расчёт по сбору за II квартал 2026</span><span class="muted">от 10.07.2026</span></div>
+      <div class="doc-row"><span>Договор № 12/2026</span><span class="muted">от 03.02.2026 · бессрочный</span></div>
+    </div>
+  </div>
+
+  <div id="tab-reports" style="display:none">
+    <div class="grid-3" id="reports-grid"></div>
+  </div>
+
+  <div id="tab-profile" style="display:none">
+    <div class="card" style="padding:24px; max-width:500px">
+      <div class="field"><label>Наименование</label><input value="ООО «Клиент Демо»" disabled></div>
+      <div class="field"><label>УНП</label><input value="191234567" disabled></div>
+      <div class="field"><label>Контактное лицо</label><input value="Иван Иванов" disabled></div>
+      <div class="field"><label>Телефон</label><input value="+375 (29) 123-45-67" disabled></div>
+      <div class="field"><label>Персональная скидка</label><input value="5%" disabled></div>
+    </div>
+  </div>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/occupancy.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+RL_LAYOUT.render("cabinet.html");
+document.querySelectorAll(".cab-tabs button").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    document.querySelectorAll(".cab-tabs button").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    ["orders", "docs", "reports", "profile"].forEach(function (t) {
+      document.getElementById("tab-" + t).style.display = t === btn.dataset.tab ? "block" : "none";
+    });
+  });
+});
+document.getElementById("reports-grid").innerHTML = [1, 2, 3].map(function (i) {
+  return '<div class="card" style="padding:16px">' + RL_UTIL.photoPlaceholder("Фотоотчёт монтажа №" + i, "poster_dynamic", { height: "140px" }) +
+    '<p class="text-sm muted mt-24">Замковая, 19 · 05.08.2026 · координаты зафиксированы</p></div>';
+}).join("");
+</script>
+</body>
+</html>

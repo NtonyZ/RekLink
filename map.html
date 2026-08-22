@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Карта рекламных мест — RekLink.by</title>
+<script>
+(function () {
+  var p = new URLSearchParams(window.location.search);
+  p.set("view", "map");
+  window.location.replace("catalog.html?" + p.toString());
+})();
+</script>
+</head>
+<body></body>
+</html>

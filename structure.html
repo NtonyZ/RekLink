@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Площадка — RekLink.by</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+.breadcrumb { font-size:13px; color:var(--muted); padding:18px 0; }
+.breadcrumb a { color:var(--violet); }
+.sd-grid { display:grid; grid-template-columns:1fr 380px; gap:32px; align-items:start; }
+.gallery-main { border-radius:var(--radius); overflow:hidden; margin-bottom:10px; }
+.gallery-thumbs { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.gallery-thumbs .photo-ph { cursor:pointer; border-radius:8px; }
+.side-switch { display:flex; gap:8px; margin-bottom:18px; }
+.side-switch a { padding:8px 16px; border-radius:99px; border:1.5px solid var(--line); font-size:13px; font-weight:600; }
+.side-switch a.active { background:var(--grad); color:#fff; border-color:transparent; }
+.specs-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; margin:20px 0; }
+.spec { border-bottom:1px dashed var(--line); padding-bottom:10px; }
+.spec .k { font-size:12px; color:var(--muted); margin-bottom:2px; }
+.spec .v { font-size:14.5px; font-weight:600; }
+.reach-box { display:flex; gap:24px; background:var(--bg-soft); border-radius:var(--radius-sm); padding:18px 22px; margin:20px 0; flex-wrap:wrap; }
+.reach-box .metric b { display:block; font-size:20px; }
+.reach-box .metric span { font-size:12px; color:var(--muted); }
+.calendar-table { width:100%; border-collapse:collapse; font-size:11.5px; }
+.calendar-table th, .calendar-table td { padding:6px 4px; text-align:center; border:1px solid var(--line); }
+.calendar-table th { background:var(--bg-soft); font-weight:600; font-size:11px; }
+.cal-cell { width:22px; height:22px; border-radius:5px; margin:0 auto; }
+.cal-commercial { background:#d64545; }
+.cal-social { background:#e5ac04; }
+.cal-free { background:#1f9d55; }
+.legend { display:flex; gap:16px; margin-top:10px; font-size:12px; color:var(--muted); }
+.legend .sw { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:middle; }
+.booking-panel { position:sticky; top:96px; padding:24px; }
+.booking-panel .price-line { display:flex; justify-content:space-between; font-size:13.5px; padding:6px 0; }
+.booking-panel .price-line.total { font-weight:700; font-size:16px; border-top:1px solid var(--line); margin-top:8px; padding-top:12px; }
+.deadline-list { font-size:12.5px; color:var(--muted); margin:14px 0; }
+.deadline-list li { display:flex; justify-content:space-between; padding:4px 0; }
+#sd-map { height:260px; border-radius:var(--radius); margin:20px 0; }
+.explainer { background:var(--bg-soft); border-radius:var(--radius-sm); padding:14px 16px; font-size:13px; color:var(--ink); margin-top:16px; }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Перейти к содержимому</a>
+<header id="site-header" class="site-header"></header>
+<div class="container breadcrumb">
+  <a href="index.html">Главная</a> / <a href="catalog.html">Каталог</a> / <span id="bc-title"></span>
+</div>
+
+<main id="main" class="container" style="padding-bottom:60px">
+  <div id="not-found" style="display:none" class="empty-state">
+    <h2>Площадка не найдена</h2>
+    <p class="muted">Проверьте ссылку или вернитесь в <a href="catalog.html">каталог</a>.</p>
+  </div>
+
+  <div id="sd-content">
+    <div class="flex-between" style="align-items:flex-start; flex-wrap:wrap; gap:14px">
+      <div>
+        <h1 id="sd-title" style="margin-bottom:6px"></h1>
+        <div class="muted" id="sd-address"></div>
+      </div>
+      <div id="sd-avail-badge"></div>
+    </div>
+
+    <div class="side-switch" id="side-switch"></div>
+
+    <div class="sd-grid">
+      <div>
+        <div id="gallery-main"></div>
+        <div class="gallery-thumbs" id="gallery-thumbs"></div>
+
+        <h3 class="mt-40">Характеристики</h3>
+        <div class="specs-grid" id="specs-grid"></div>
+        <div class="explainer" id="format-explainer"></div>
+
+        <h3 class="mt-40">Охват</h3>
+        <div id="reach-section"></div>
+
+        <h3 class="mt-40">Календарь занятости на 12 месяцев</h3>
+        <p class="text-sm muted">Занятость показана по типам без раскрытия наименований клиентов.</p>
+        <div style="overflow-x:auto">
+          <table class="calendar-table" id="cal-table"></table>
+        </div>
+        <div class="legend">
+          <span><i class="sw cal-free"></i>Свободно</span>
+          <span><i class="sw cal-social"></i>Социальная реклама</span>
+          <span><i class="sw cal-commercial"></i>Занято</span>
+        </div>
+
+        <h3 class="mt-40">Расположение</h3>
+        <div id="sd-map"></div>
+      </div>
+
+      <div class="card booking-panel">
+        <h3>Расчёт стоимости</h3>
+        <div class="field">
+          <label>Начало размещения</label>
+          <select id="b-start"></select>
+        </div>
+        <div class="field">
+          <label>Срок, мес.</label>
+          <select id="b-months">
+            <option value="1">1 месяц</option>
+            <option value="2">2 месяца</option>
+            <option value="3">3 месяца</option>
+            <option value="6">6 месяцев</option>
+            <option value="12">12 месяцев</option>
+          </select>
+        </div>
+        <div id="price-lines"></div>
+        <div class="disclaimer mt-24" id="fee-note"></div>
+        <ul class="deadline-list" id="deadline-list"></ul>
+        <div class="flex gap-8 mt-24">
+          <button class="btn btn-primary btn-block" id="btn-add">Добавить в медиаплан</button>
+        </div>
+        <a href="mediaplan.html" class="btn btn-gold btn-block mt-24" id="btn-book">Забронировать сейчас</a>
+        <p class="text-sm muted mt-24">После отправки заявки позиция резервируется на срок, установленный справочником, до подписания счёта-протокола.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/occupancy.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/structure.js"></script>
+</body>
+</html>

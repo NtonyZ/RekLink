@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор рекламного бюджета — RekLink.by</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.calc-modes { display:flex; gap:10px; margin-bottom:28px; }
+.calc-modes button { flex:1; padding:16px; border-radius:var(--radius-sm); border:1.5px solid var(--line); background:#fff; font-weight:600; cursor:pointer; text-align:left; }
+.calc-modes button .t { display:block; font-size:14.5px; margin-bottom:2px; }
+.calc-modes button .d { display:block; font-size:12.5px; color:var(--muted); font-weight:400; }
+.calc-modes button.active { border-color:var(--violet); background:rgba(59,42,152,.05); box-shadow:0 0 0 1px var(--violet) inset; }
+.calc-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.format-check { display:flex; align-items:center; gap:8px; padding:10px 14px; border:1.5px solid var(--line); border-radius:var(--radius-sm); cursor:pointer; font-size:13.5px; }
+.format-check input { margin:0; }
+.result-item { display:flex; gap:12px; padding:12px; border:1px solid var(--line); border-radius:10px; margin-bottom:10px; align-items:center; }
+.result-item .info { flex:1; }
+.result-item h5 { margin:0 0 3px; font-size:13.5px; }
+.result-item .meta { font-size:12px; color:var(--muted); }
+.result-summary { display:flex; gap:28px; flex-wrap:wrap; padding:20px 24px; background:var(--bg-soft); border-radius:var(--radius-sm); margin:20px 0; }
+.result-summary .metric b { display:block; font-size:22px; }
+.result-summary .metric span { font-size:12px; color:var(--muted); }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Перейти к содержимому</a>
+<header id="site-header" class="site-header"></header>
+
+<main id="main" class="container" style="padding:32px 24px 60px; max-width:900px">
+  <h1>Калькулятор рекламного бюджета</h1>
+  <p class="muted mb-24">Подберите набор площадок от заданной суммы или посчитайте стоимость и охват уже собранной подборки.</p>
+
+  <div class="calc-modes">
+    <button id="mode-budget" class="active">
+      <span class="t">От бюджета</span>
+      <span class="d">Указываю сумму — система подбирает места с максимальным охватом</span>
+    </button>
+    <button id="mode-selection">
+      <span class="t">От подборки</span>
+      <span class="d">У меня уже есть медиаплан — посчитать его стоимость и охват</span>
+    </button>
+  </div>
+
+  <div id="panel-budget" class="card" style="padding:28px">
+    <div class="calc-form-grid">
+      <div class="field">
+        <label>Бюджет, BYN</label>
+        <input type="number" id="c-budget" value="2000" min="100" step="50">
+      </div>
+      <div class="field">
+        <label>Город</label>
+        <select id="c-city"><option value="">Любой</option></select>
+      </div>
+      <div class="field">
+        <label>Начало размещения</label>
+        <select id="c-start"></select>
+      </div>
+      <div class="field">
+        <label>Срок, мес.</label>
+        <select id="c-months">
+          <option value="1">1 месяц</option>
+          <option value="2">2 месяца</option>
+          <option value="3" selected>3 месяца</option>
+          <option value="6">6 месяцев</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Предпочитаемые форматы</label>
+      <div class="flex gap-8" id="c-formats" style="flex-wrap:wrap"></div>
+    </div>
+    <button class="btn btn-primary mt-24" id="c-submit">Подобрать площадки</button>
+
+    <div id="c-results" style="display:none">
+      <hr class="divider">
+      <h3>Результат подбора</h3>
+      <div id="c-summary"></div>
+      <div id="c-items"></div>
+      <button class="btn btn-gold mt-24" id="c-add-all">Добавить всё в медиаплан</button>
+    </div>
+    <div id="c-empty" class="disclaimer mt-24" style="display:none">По заданным условиям подходящих свободных мест не нашлось. Увеличьте бюджет, измените период или город.</div>
+  </div>
+
+  <div id="panel-selection" class="card" style="padding:28px; display:none">
+    <div id="sel-content"></div>
+  </div>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/occupancy.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/calculator.js"></script>
+</body>
+</html>

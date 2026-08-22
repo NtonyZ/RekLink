@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RekLink.by — рекламные места ФОРУС в Витебске и Полоцке</title>
+<meta name="description" content="Каталог рекламных конструкций, карта, калькулятор бюджета и онлайн-заявка на размещение наружной рекламы в Витебске и Полоцке.">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.step-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:20px; }
+.step { text-align:center; }
+.step .num { width:44px;height:44px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto 14px; }
+.step h4 { font-size:15px; margin-bottom:6px; }
+.step p { font-size:13px; color:var(--muted); margin:0; }
+.format-card { padding:28px; display:flex; flex-direction:column; gap:10px; transition:transform .15s, box-shadow .15s; }
+.format-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+.format-card .ic { width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff; }
+.format-card h3 { font-size:17px; }
+.format-card p { font-size:13.5px; color:var(--muted); flex:1; }
+.free-card { padding:16px; display:flex; flex-direction:column; gap:10px; }
+.free-card h4 { font-size:14px; margin:0; }
+.free-card .addr { font-size:12.5px; color:var(--muted); }
+.benefit { display:flex; gap:14px; align-items:flex-start; }
+.benefit .ic { font-size:22px; flex-shrink:0; }
+.benefit h4 { font-size:15px; margin-bottom:4px; }
+.benefit p { font-size:13.5px; color:var(--muted); margin:0; }
+.hero-form { background:#fff; border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); color:var(--ink); max-width:400px; }
+.hero-form h3 { font-size:16px; margin-bottom:14px; }
+.hero-wrap { display:grid; grid-template-columns:1.2fr .8fr; gap:40px; align-items:center; }
+@media (max-width: 980px) { .hero-wrap{grid-template-columns:1fr;} .step-grid{grid-template-columns:repeat(2,1fr);} }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Перейти к содержимому</a>
+<header id="site-header" class="site-header"></header>
+
+<main id="main">
+  <section class="hero">
+    <div class="container inner hero-wrap">
+      <div>
+        <span class="eyebrow" style="background:rgba(255,255,255,.15); color:#fff">Один оператор — все форматы</span>
+        <h1>Наружная и Indoor-реклама в Витебске и Полоцке</h1>
+        <p class="lead">Смотрите свободные места на карте, узнавайте охват и цену без звонка менеджеру и оформляйте заявку онлайн — от одного скроллера до полной рекламной кампании.</p>
+        <div class="flex gap-12 mt-24" style="flex-wrap:wrap">
+          <a href="catalog.html" class="btn btn-gold">Смотреть каталог мест</a>
+          <a href="calculator.html" class="btn btn-outline" style="border-color:rgba(255,255,255,.4); color:#fff">Рассчитать бюджет</a>
+        </div>
+        <div class="hero-stats" id="hero-stats"></div>
+      </div>
+      <div class="hero-form">
+        <h3>Быстрый подбор площадок</h3>
+        <div class="field">
+          <label>Формат</label>
+          <select id="q-format">
+            <option value="">Любой формат</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Город</label>
+          <select id="q-city">
+            <option value="">Любой город</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Только свободные</label>
+          <select id="q-free">
+            <option value="1">Да</option>
+            <option value="0">Показать все</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-block" id="q-submit">Показать на карте</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Форматы рекламы</span>
+        <h2>Выберите формат под задачу</h2>
+        <p>У каждого формата свой охват, цена и сила воздействия — сравните на странице форматов или сразу переходите в каталог.</p>
+      </div>
+      <div class="grid-3" id="format-cards"></div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Товарный запас</span>
+        <h2>Свободно прямо сейчас</h2>
+        <p>Позиции, которые простаивают дольше всего, — с реальным охватом там, где данные МТС уже загружены.</p>
+      </div>
+      <div class="grid-4" id="free-now"></div>
+      <div class="text-center mt-40">
+        <a href="catalog.html?free=1" class="btn btn-outline">Все свободные места →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Как это работает</span>
+        <h2>От выбора места до фотоотчёта — 5 шагов</h2>
+      </div>
+      <div class="step-grid">
+        <div class="step"><div class="num">1</div><h4>Выбор площадки</h4><p>Каталог, карта и калькулятор бюджета подбирают места под цель</p></div>
+        <div class="step"><div class="num">2</div><h4>Медиаплан</h4><p>Собираете подборку, видите итоговую цену и охват, сохраняете ссылку</p></div>
+        <div class="step"><div class="num">3</div><h4>Заявка и счёт</h4><p>Оформляете заявку онлайн, получаете счёт-протокол на подпись</p></div>
+        <div class="step"><div class="num">4</div><h4>Материалы</h4><p>Загружаете макет или ролик, проходите автопроверку по техтребованиям</p></div>
+        <div class="step"><div class="num">5</div><h4>Размещение</h4><p>Монтаж, трансляция и фотоотчёт доступны в личном кабинете</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Почему RekLink</span>
+        <h2>Реклама, которая опирается на данные</h2>
+      </div>
+      <div class="grid-2" style="gap:28px 40px">
+        <div class="benefit"><span class="ic">📍</span><div><h4>264 позиции в Витебске и Полоцке</h4><p>Скроллеры, медиа-постеры, LED-экраны и видеопанели — вся адресная программа в одном каталоге, а не в файле Excel.</p></div></div>
+        <div class="benefit"><span class="ic">📊</span><div><h4>Охват МТС по каждой поверхности</h4><p>Там, где есть данные платформы МТС Охват, вы видите не только адрес, а реальное число контактов и цену за 1000 контактов.</p></div></div>
+        <div class="benefit"><span class="ic">🗺️</span><div><h4>Карта вместо списка адресов</h4><p>Отметки на карте показывают доступность в выбранном периоде и группируются в кластеры при отдалении.</p></div></div>
+        <div class="benefit"><span class="ic">⚡</span><div><h4>Заявка без звонка менеджеру</h4><p>Медиаплан, расчёт стоимости, справочная сумма сбора и форма заявки — самостоятельно, в любое время.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="card" style="background:var(--grad); color:#fff; padding:48px; text-align:center; border:none">
+        <h2 style="color:#fff">Не знаете, с чего начать?</h2>
+        <p style="color:rgba(255,255,255,.85); max-width:520px; margin:0 auto 24px">Укажите бюджет и город — калькулятор подберёт набор площадок с максимальным охватом и покажет медиаплан.</p>
+        <a href="calculator.html" class="btn btn-gold">Открыть калькулятор бюджета</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/occupancy.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+RL_LAYOUT.render("index.html");
+
+// hero stats
+(function(){
+  var totalPositions = RL.structures.reduce(function(s,st){return s+st.totalPositions;},0);
+  var el = document.getElementById('hero-stats');
+  var years = SELLER_YEARS();
+  var stats = [
+    [RL.structures.length, 'конструкций'],
+    [totalPositions, 'позиций'],
+    [RL.cities.length, 'города'],
+    [years, YEARS_WORD(years) + ' на рынке']
+  ];
+  function SELLER_YEARS(){ return new Date().getFullYear() - RL.seller.founded; }
+  function YEARS_WORD(n){
+    var mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'год';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'года';
+    return 'лет';
+  }
+  el.innerHTML = stats.map(function(s){return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>';}).join('');
+})();
+
+// format selects
+(function(){
+  var fSel = document.getElementById('q-format');
+  Object.keys(RL.formats).forEach(function(code){
+    var f = RL.formats[code];
+    var o = document.createElement('option'); o.value = code; o.textContent = f.shortTitle; fSel.appendChild(o);
+  });
+  var cSel = document.getElementById('q-city');
+  RL.cities.forEach(function(c){
+    var o = document.createElement('option'); o.value = c; o.textContent = c; cSel.appendChild(o);
+  });
+  document.getElementById('q-submit').addEventListener('click', function(){
+    var params = new URLSearchParams();
+    if (fSel.value) params.set('format', fSel.value);
+    if (cSel.value) params.set('city', cSel.value);
+    if (document.getElementById('q-free').value === '1') params.set('free','1');
+    window.location.href = 'map.html?' + params.toString();
+  });
+})();
+
+// format cards
+(function(){
+  var el = document.getElementById('format-cards');
+  var order = ['poster_static','poster_dynamic','media_poster','led_screen','indoor'];
+  el.innerHTML = order.map(function(code){
+    var f = RL.formats[code];
+    var icon = {poster_static:'🖼',poster_dynamic:'🔄',media_poster:'📺',led_screen:'🖥',indoor:'📶'}[code];
+    return '<a href="formats.html#'+code+'" class="card format-card">'+
+      '<div class="ic" style="background:'+f.color+'">'+icon+'</div>'+
+      '<h3>'+f.shortTitle+'</h3><p>'+f.description+'</p>'+
+      '<span class="text-sm" style="color:var(--violet);font-weight:600">Подробнее →</span>'+
+    '</a>';
+  }).join('');
+})();
+
+// free now — top idle static/dynamic positions by month, prefer ones with reach data
+(function(){
+  var el = document.getElementById('free-now');
+  var flat = RL_UTIL.flattenPositions().filter(function(x){ return x.format==='poster_static' || x.format==='poster_dynamic'; });
+  var offset = 0;
+  var free = flat.filter(function(x){
+    return RL_OCC.statusFor(x.structure.id, x.side.code, x.position.number, x.format, offset) === 'free';
+  });
+  // dedupe by structure+side, prefer ones with reach
+  var seen = {};
+  var picks = [];
+  free.forEach(function(x){
+    var k = x.structure.id+'-'+x.side.code;
+    if (seen[k]) return; seen[k]=1;
+    picks.push(x);
+  });
+  picks.sort(function(a,b){
+    var ra = RL_UTIL.reachFor(a.structure.id, a.side.code) ? 1 : 0;
+    var rb = RL_UTIL.reachFor(b.structure.id, b.side.code) ? 1 : 0;
+    return rb - ra;
+  });
+  picks = picks.slice(0, 4);
+  el.innerHTML = picks.map(function(x){
+    var f = RL.formats[x.format];
+    var reach = RL_UTIL.reachFor(x.structure.id, x.side.code);
+    var priceLine = RL_UTIL.money(f.priceMonth) + ' / мес';
+    var reachLine = reach ? (RL_UTIL.int(reach.total) + ' конт. · CPM ' + RL_UTIL.money(RL_UTIL.cpm(f.priceMonth, reach.total))) : 'Охват уточняется';
+    return '<a href="structure.html?id='+x.structure.id+'&side='+x.side.code+'" class="card free-card">'+
+      RL_UTIL.photoPlaceholder(x.structure.publicTitle, x.format, {height:'110px'}) +
+      '<h4>'+RL_UTIL.escapeHtml(x.structure.publicTitle)+'</h4>'+
+      '<span class="addr">'+x.structure.city+' · сторона '+x.side.code+' · '+f.shortTitle+'</span>'+
+      '<span class="badge badge-free" style="align-self:flex-start">Свободно</span>'+
+      '<div class="flex-between text-sm"><b>'+priceLine+'</b><span class="muted">'+reachLine+'</span></div>'+
+    '</a>';
+  }).join('');
+})();
+</script>
+</body>
+</html>
