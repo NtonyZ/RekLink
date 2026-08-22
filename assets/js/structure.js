@@ -42,19 +42,53 @@
       }).join("");
     }
 
-    // gallery
+    // Галерея: сначала реальные снимки сторон из адресной презентации (текущая сторона
+    // первой), затем — недостающие типы съёмки по п. 5.2.1 ТЗ, которые загружает администратор.
+    var views = [];
+    if (!isLed) {
+      var sideOrder = [side.code];
+      structure.sides.forEach(function (s) { if (s.code !== side.code) sideOrder.push(s.code); });
+      sideOrder.forEach(function (code) {
+        if (RL_UTIL.photoUrl(structure.id, code)) {
+          views.push({ side: code, label: "Сторона " + code + " — общий план" });
+        }
+      });
+    }
+    var missing = views.length ? PHOTO_TYPES.slice(1) : PHOTO_TYPES;
+    missing.forEach(function (t) { views.push({ side: null, label: t }); });
+
     var mainEl = document.getElementById("gallery-main");
     var thumbsEl = document.getElementById("gallery-thumbs");
-    function setMain(idx) {
-      mainEl.innerHTML = RL_UTIL.photoPlaceholder(PHOTO_TYPES[idx] + " — " + structure.publicTitle, format, { height: "360px" });
+    function tile(v, height) {
+      return v.side
+        ? RL_UTIL.photoTile(structure.id, v.side, v.label, format, { height: height, sideBadge: true, eager: true })
+        : RL_UTIL.photoPlaceholder(v.label, format, { height: height });
     }
-    setMain(0);
-    thumbsEl.innerHTML = PHOTO_TYPES.map(function (t, i) {
-      return '<div data-idx="' + i + '">' + RL_UTIL.photoPlaceholder(t, format, { height: "70px" }) + "</div>";
+    function setMain(idx) {
+      mainEl.innerHTML = tile(views[idx], "360px");
+      thumbsEl.querySelectorAll("[data-idx]").forEach(function (el) {
+        el.classList.toggle("active", parseInt(el.getAttribute("data-idx"), 10) === idx);
+      });
+    }
+    thumbsEl.innerHTML = views.map(function (v, i) {
+      return '<div data-idx="' + i + '">' + tile(v, "70px") + "</div>";
     }).join("");
     thumbsEl.querySelectorAll("[data-idx]").forEach(function (el) {
       el.addEventListener("click", function () { setMain(parseInt(el.getAttribute("data-idx"), 10)); });
     });
+    setMain(0);
+
+    // Описание расположения и панорама «Яндекс» из адресной презентации
+    var loc = RL_UTIL.locationFor(structure.id);
+    if (loc && loc.desc) {
+      var descEl = document.getElementById("sd-location-desc");
+      descEl.textContent = loc.desc;
+      descEl.style.display = "block";
+    }
+    if (loc && loc.pano) {
+      document.getElementById("sd-pano").href = loc.pano;
+      document.getElementById("sd-pano-row").style.display = "block";
+    }
 
     // availability badge (current month)
     var summary0 = isLed ? ledSummary(0) : RL_OCC.sideSummary(structure, side, 0);

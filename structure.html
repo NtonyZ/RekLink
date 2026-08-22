@@ -13,6 +13,8 @@
 .gallery-main { border-radius:var(--radius); overflow:hidden; margin-bottom:10px; }
 .gallery-thumbs { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
 .gallery-thumbs .photo-ph { cursor:pointer; border-radius:8px; }
+.gallery-thumbs [data-idx] { border-radius:8px; outline:2px solid transparent; outline-offset:1px; transition:outline-color .15s; }
+.gallery-thumbs [data-idx].active { outline-color:var(--violet); }
 .side-switch { display:flex; gap:8px; margin-bottom:18px; }
 .side-switch a { padding:8px 16px; border-radius:99px; border:1.5px solid var(--line); font-size:13px; font-weight:600; }
 .side-switch a.active { background:var(--grad); color:#fff; border-color:transparent; }
@@ -89,6 +91,10 @@
         </div>
 
         <h3 class="mt-40">Расположение</h3>
+        <p class="text-sm" id="sd-location-desc" style="display:none"></p>
+        <p class="text-sm" id="sd-pano-row" style="display:none">
+          <a id="sd-pano" href="#" target="_blank" rel="noopener noreferrer">Открыть панораму «Яндекс» →</a>
+        </p>
         <div id="sd-map"></div>
       </div>
 
@@ -125,6 +131,7 @@
 
 <script src="assets/js/data.js"></script>
 <script src="assets/js/occupancy.js"></script>
+<script src="assets/js/locations.js"></script>
 <script src="assets/js/utils.js"></script>
 <script src="assets/js/layout.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

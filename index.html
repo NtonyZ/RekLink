@@ -144,6 +144,7 @@
 
 <script src="assets/js/data.js"></script>
 <script src="assets/js/occupancy.js"></script>
+<script src="assets/js/locations.js"></script>
 <script src="assets/js/utils.js"></script>
 <script src="assets/js/layout.js"></script>
 <script>
@@ -233,7 +234,7 @@ RL_LAYOUT.render("index.html");
     var priceLine = RL_UTIL.money(f.priceMonth) + ' / мес';
     var reachLine = reach ? (RL_UTIL.int(reach.total) + ' конт. · CPM ' + RL_UTIL.money(RL_UTIL.cpm(f.priceMonth, reach.total))) : 'Охват уточняется';
     return '<a href="structure.html?id='+x.structure.id+'&side='+x.side.code+'" class="card free-card">'+
-      RL_UTIL.photoPlaceholder(x.structure.publicTitle, x.format, {height:'110px'}) +
+      RL_UTIL.photoTile(x.structure.id, x.side.code, x.structure.publicTitle, x.format, {height:'110px', sideBadge:true}) +
       '<h4>'+RL_UTIL.escapeHtml(x.structure.publicTitle)+'</h4>'+
       '<span class="addr">'+x.structure.city+' · сторона '+x.side.code+' · '+f.shortTitle+'</span>'+
       '<span class="badge badge-free" style="align-self:flex-start">Свободно</span>'+

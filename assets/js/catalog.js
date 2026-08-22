@@ -138,7 +138,7 @@
       : (freePositions + " своб. из " + summary.total);
     var detailHref = "structure.html?id=" + item.structureId + (item.sideCode ? "&side=" + item.sideCode : "");
     return (
-      '<div class="pop-photo">' + RL_UTIL.photoPlaceholder(item.title, item.format, { height: "90px" }) + "</div>" +
+      '<div class="pop-photo">' + RL_UTIL.photoTile(item.structureId, item.sideCode, item.title, item.format, { height: "90px", sideBadge: !!item.sideCode }) + "</div>" +
       '<div class="pop-title">' + RL_UTIL.escapeHtml(item.title) + "</div>" +
       '<div class="pop-meta">' + fmt.shortTitle + (item.sideCode ? " · сторона " + item.sideCode : "") + " · " + availText + "<br>" +
         RL_UTIL.money(item.price) + " / мес · " + reachLine + "</div>" +
@@ -236,7 +236,7 @@
       var detailHref = "structure.html?id=" + item.structureId + (item.sideCode ? "&side=" + item.sideCode : "");
       return (
         '<a class="cat-item" href="' + detailHref + '" data-id="' + item.id + '">' +
-          RL_UTIL.photoPlaceholder(item.title, item.format, { height: "72px" }).replace('class="photo-ph"', 'class="photo-ph thumb"') +
+          RL_UTIL.photoTile(item.structureId, item.sideCode, item.title, item.format, { height: "72px", cls: "thumb", thumb: true }) +
           '<div class="info">' +
             "<h4>" + RL_UTIL.escapeHtml(item.title) + "</h4>" +
             '<div class="meta">' + item.city + " · " + fmt.shortTitle + (item.sideCode ? " · сторона " + item.sideCode : "") + " · " + reachLine + "</div>" +

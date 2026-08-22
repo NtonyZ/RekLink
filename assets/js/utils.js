@@ -163,13 +163,21 @@
 
   // Заглушка фотографии: настоящие снимки загружаются администратором (п. 5.2 ТЗ);
   // в прототипе используется цветной блок с меткой формата и адресом.
+  // opts: { height, cls, style, thumb, sideBadge }
+  function photoFrameAttrs(opts, extraCls) {
+    var cls = "photo-ph" + (extraCls ? " " + extraCls : "") + (opts.cls ? " " + opts.cls : "");
+    var style = "height:" + (opts.height || "180px") + ";" + (opts.style ? opts.style + ";" : "");
+    return { cls: cls, style: style };
+  }
+
   function photoPlaceholder(label, formatCode, opts) {
     opts = opts || {};
     var fmt = RL.formats[formatCode] || {};
     var icon = { poster_static: "🖼", poster_dynamic: "🔄", media_poster: "📺", led_screen: "🖥", indoor: "📶" }[formatCode] || "📷";
-    var h = opts.height || "180px";
+    var a = photoFrameAttrs(opts);
+    var bg = "background:linear-gradient(135deg," + (fmt.color || "#3b2a98") + "cc, " + (fmt.color || "#7b1fa2") + "55), var(--bg-soft)";
     return (
-      '<div class="photo-ph" style="height:' + h + ';background:linear-gradient(135deg,' + (fmt.color || "#3b2a98") + "cc, " + (fmt.color || "#7b1fa2") + '55), var(--bg-soft)">' +
+      '<div class="' + a.cls + '" style="' + a.style + bg + '">' +
         '<span class="photo-ph-icon">' + icon + "</span>" +
         '<span class="photo-ph-label">' + escapeHtml(label) + "</span>" +
       "</div>"
@@ -182,6 +190,40 @@
   function sideDirectionLabel(trafficType, sideCode) {
     var flow = { pedestrian: "пешеходов", vehicle: "транспорта", mixed: "потока" }[trafficType] || "потока";
     return (sideCode === "A" ? "По ходу движения " : "Против хода движения ") + flow;
+  }
+
+  // Реальные снимки площадок из адресной презентации ФОРУС (индекс — RL_PHOTOS).
+  // Полный набор типов съёмки по п. 5.2.1 ТЗ загружает администратор; здесь доступен
+  // общий план по каждой стороне.
+  function photoUrl(structureId, sideCode, thumb) {
+    if (!structureId || !sideCode) return null;
+    var num = String(structureId).replace(/^S/, "");
+    var sides = (global.RL_PHOTOS || {})[num];
+    if (!sides || sides.indexOf(sideCode) === -1) return null;
+    return "assets/img/structures/S" + num + sideCode + (thumb ? "_t" : "") + ".jpg";
+  }
+
+  // Снимок стороны, если он есть, иначе — прежняя цветная заглушка.
+  // Обёртка совпадает с photoPlaceholder, поэтому вызывающий код не меняется.
+  function photoTile(structureId, sideCode, label, formatCode, opts) {
+    opts = opts || {};
+    var url = photoUrl(structureId, sideCode, opts.thumb);
+    if (!url) return photoPlaceholder(label, formatCode, opts);
+    var a = photoFrameAttrs(opts, "has-photo");
+    // Ленивая загрузка — для списков с десятками карточек; для главного снимка
+    // карточки площадки она только задерживает отрисовку.
+    var loading = opts.eager ? "" : ' loading="lazy"';
+    return (
+      '<div class="' + a.cls + '" style="' + a.style + '">' +
+        '<img src="' + url + '" alt="' + escapeHtml(label) + '"' + loading + ">" +
+        (opts.sideBadge ? '<span class="photo-ph-side">Сторона ' + escapeHtml(sideCode) + "</span>" : "") +
+      "</div>"
+    );
+  }
+
+  function locationFor(structureId) {
+    var num = String(structureId).replace(/^S/, "");
+    return (global.RL_LOCATIONS || {})[num] || null;
   }
 
   function availabilityBadge(avail) {
@@ -203,6 +245,7 @@
     ordersLoad: ordersLoad, ordersAdd: ordersAdd,
     qs: qs, escapeHtml: escapeHtml,
     photoPlaceholder: photoPlaceholder, availabilityBadge: availabilityBadge, sideDirectionLabel: sideDirectionLabel,
+    photoUrl: photoUrl, photoTile: photoTile, locationFor: locationFor,
     catalogItems: catalogItems, itemAvailability: itemAvailability, itemFreeForRange: itemFreeForRange
   };
 })(window);

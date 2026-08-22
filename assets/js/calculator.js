@@ -111,7 +111,7 @@
       var reachText = item._reach ? RL_UTIL.int(item._reach.total) + " конт./мес" : "охват уточняется";
       return (
         '<div class="result-item">' +
-          RL_UTIL.photoPlaceholder(item.title, item.format, { height: "56px" }).replace('style="', 'style="width:80px;flex-shrink:0;') +
+          RL_UTIL.photoTile(item.structureId, item.sideCode, item.title, item.format, { height: "56px", style: "width:80px;flex-shrink:0", thumb: true }) +
           '<div class="info"><h5>' + RL_UTIL.escapeHtml(item.title) + (item.sideCode ? " · " + item.sideCode : "") + '</h5>' +
           '<div class="meta">' + item.city + " · " + fmt.shortTitle + " · " + reachText + "</div></div>" +
           "<b>" + RL_UTIL.money(item.cost) + "</b>" +
