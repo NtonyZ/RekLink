@@ -77,6 +77,18 @@
     return structureId + "-" + sideCode + "-" + positionNumber;
   }
 
+  // Демонстрационное наименование клиента для занятой позиции (адресная программа, п. 10.1.1 ТЗ).
+  // В проде значение ячейки — реальный клиент из заказа; здесь генерируется детерминированно.
+  var DEMO_CLIENTS = [
+    "ООО «Витебскдрев»", "ИП Соколова", "ООО «Технолайн»", "СООО «Марко»", "ООО «Белвест-Ритейл»",
+    "ИП Ковалёв", "ООО «Хозторг»", "ЧТУП «Автополюс»", "ООО «Аптечная сеть 36,6»", "ООО «Вкусвилл-Бел»",
+    "ИП Радевич", "ООО «Стройсервис»", "ОДО «Медиагрупп»", "ООО «Электросвет»", "ИП Юркевич"
+  ];
+  function clientNameFor(posKey, calMonthIndex) {
+    var idx = Math.floor(rand01(posKey + "|" + calMonthIndex + "|client") * DEMO_CLIENTS.length);
+    return DEMO_CLIENTS[idx];
+  }
+
   // Возвращает статус позиции для конкретного месяца горизонта (offset от текущего, 0..11)
   function statusFor(structureId, sideCode, positionNumber, format, offset) {
     var m = monthList(1, offset)[0];
@@ -117,6 +129,7 @@
     monthList: monthList,
     positionKey: positionKey,
     statusFor: statusFor,
+    clientNameFor: clientNameFor,
     sideSummary: sideSummary,
     structureSummary: structureSummary,
     availabilityLabel: availabilityLabel

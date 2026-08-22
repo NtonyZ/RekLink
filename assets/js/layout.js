@@ -73,7 +73,7 @@
         "</div>" +
         '<div class="footer-bottom">' +
           "<span>© " + new Date().getFullYear() + " " + s.title + ". Продажа собственного рекламного инвентаря. Прототип портала RekLink.by по ТЗ v5.0.</span>" +
-          '<span>НДС не облагается</span>' +
+          '<span>НДС не облагается · <a href="admin.html" style="color:inherit">Адресная программа (для сотрудников)</a></span>' +
         "</div>" +
       "</div>";
   }
