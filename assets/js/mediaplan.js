@@ -201,6 +201,24 @@
     document.getElementById("apply-form").style.display = "none";
     document.getElementById("apply-success").style.display = "block";
     document.getElementById("apply-success").scrollIntoView({ behavior: "smooth" });
+
+    var cities = items.reduce(function (acc, it) { if (acc.indexOf(it.city) < 0) acc.push(it.city); return acc; }, []);
+    var formats = items.reduce(function (acc, it) { var t = RL.formats[it.format].shortTitle; if (acc.indexOf(t) < 0) acc.push(t); return acc; }, []);
+    var starts = items.map(function (it) { return it.startOffset || 0; });
+    var ends = items.map(function (it) { return (it.startOffset || 0) + (it.months || 1) - 1; });
+    var startM = RL_OCC.monthList(1, Math.min.apply(null, starts))[0];
+    var endM = RL_OCC.monthList(1, Math.max.apply(null, ends))[0];
+    var period = startM.label === endM.label ? startM.short : startM.short + "–" + endM.short;
+    var grandTotal = items.reduce(function (sum, it) { return sum + priceFor(it).total; }, 0);
+
+    RL_UTIL.ordersAdd({
+      number: num,
+      date: new Date().toISOString(),
+      meta: cities.join(", ") + " · " + formats.join(", ") + " · " + items.length + (items.length === 1 ? " позиция" : " позиций") + " · " + period,
+      total: grandTotal,
+      status: "new"
+    });
+
     RL_UTIL.mpClear();
   });
 })();

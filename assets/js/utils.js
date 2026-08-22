@@ -135,6 +135,21 @@
     return mpLoad().items.length;
   }
 
+  // ---- Заказы клиента: заявки, отправленные из медиаплана, отражаются в личном кабинете (раздел 9, п. 11.2 ТЗ) ----
+  var ORDERS_KEY = "reklink_orders_v1";
+
+  function ordersLoad() {
+    try {
+      var raw = localStorage.getItem(ORDERS_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function ordersAdd(order) {
+    var orders = ordersLoad();
+    orders.unshift(order);
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders.slice(0, 20)));
+  }
+
   function qs(name) {
     var params = new URLSearchParams(window.location.search);
     return params.get(name);
@@ -177,6 +192,7 @@
     reachFor: reachFor, cpm: cpm, feeEstimate: feeEstimate,
     discountForSelection: discountForSelection,
     mpLoad: mpLoad, mpSave: mpSave, mpAdd: mpAdd, mpRemove: mpRemove, mpClear: mpClear, mpCount: mpCount,
+    ordersLoad: ordersLoad, ordersAdd: ordersAdd,
     qs: qs, escapeHtml: escapeHtml,
     photoPlaceholder: photoPlaceholder, availabilityBadge: availabilityBadge,
     catalogItems: catalogItems, itemAvailability: itemAvailability, itemFreeForRange: itemFreeForRange

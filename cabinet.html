@@ -36,6 +36,7 @@
   </div>
 
   <div id="tab-orders">
+    <div id="live-orders"></div>
     <div class="order-row">
       <span class="n">№ 2026-041</span>
       <span class="meta">Замковая, 19 · медиа-постер · 3 позиции · авг–окт 2026</span>
@@ -98,6 +99,19 @@ document.querySelectorAll(".cab-tabs button").forEach(function (btn) {
     });
   });
 });
+var liveOrders = RL_UTIL.ordersLoad();
+document.getElementById("live-orders").innerHTML = liveOrders.map(function (o) {
+  return '<div class="order-row">' +
+    '<span class="n">' + RL_UTIL.escapeHtml(o.number) + "</span>" +
+    '<span class="meta">' + RL_UTIL.escapeHtml(o.meta) + "</span>" +
+    '<span class="status-pill" style="background:#eef2ff;color:#3b4fd6">new — заявка получена</span>' +
+    "<b>" + RL_UTIL.money(o.total) + "</b>" +
+  "</div>";
+}).join("");
+if (liveOrders.length) {
+  document.querySelector('[data-tab="orders"]').textContent = "Заказы (" + liveOrders.length + " " + (liveOrders.length === 1 ? "новый" : "новых") + ")";
+}
+
 document.getElementById("reports-grid").innerHTML = [1, 2, 3].map(function (i) {
   return '<div class="card" style="padding:16px">' + RL_UTIL.photoPlaceholder("Фотоотчёт монтажа №" + i, "poster_dynamic", { height: "140px" }) +
     '<p class="text-sm muted mt-24">Замковая, 19 · 05.08.2026 · координаты зафиксированы</p></div>';
