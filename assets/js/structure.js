@@ -37,7 +37,8 @@
     if (!isLed && structure.sides.length > 1) {
       document.getElementById("side-switch").innerHTML = structure.sides.map(function (s) {
         var f2 = RL.formats[s.positions[0].format];
-        return '<a href="structure.html?id=' + structure.id + "&side=" + s.code + '" class="' + (s.code === side.code ? "active" : "") + '">Сторона ' + s.code + " · " + f2.shortTitle + "</a>";
+        var dir = RL_UTIL.sideDirectionLabel(structure.trafficType, s.code);
+        return '<a href="structure.html?id=' + structure.id + "&side=" + s.code + '" class="' + (s.code === side.code ? "active" : "") + '" title="' + dir + '">Сторона ' + s.code + (s.code === "A" ? " →" : " ←") + " · " + f2.shortTitle + "</a>";
       }).join("");
     }
 
@@ -74,6 +75,7 @@
         specs.push(["Доля времени показа", "100% (виден постоянно)"]);
       }
       specs.push(["Тип трафика", { pedestrian: "Пешеходный", vehicle: "Автомобильный", mixed: "Смешанный" }[structure.trafficType]]);
+      specs.push(["Направление стороны", RL_UTIL.sideDirectionLabel(structure.trafficType, side.code)]);
       specs.push(["Согласование содержания", structure.requiresContentApproval ? "Требуется" : "Не требуется"]);
       specs.push(["Разрешение действительно до", structure.permitValidUntil]);
     }

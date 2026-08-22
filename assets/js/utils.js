@@ -176,6 +176,14 @@
     );
   }
 
+  // Сторона A конструкции ориентирована по ходу движения (транспорта или пешеходов
+  // в зависимости от типа трафика точки), сторона B — обратная сторона. Правило
+  // единое для статичных и динамических позиций.
+  function sideDirectionLabel(trafficType, sideCode) {
+    var flow = { pedestrian: "пешеходов", vehicle: "транспорта", mixed: "потока" }[trafficType] || "потока";
+    return (sideCode === "A" ? "По ходу движения " : "Против хода движения ") + flow;
+  }
+
   function availabilityBadge(avail) {
     var map = {
       free: ['badge-free', 'Свободно'],
@@ -194,7 +202,7 @@
     mpLoad: mpLoad, mpSave: mpSave, mpAdd: mpAdd, mpRemove: mpRemove, mpClear: mpClear, mpCount: mpCount,
     ordersLoad: ordersLoad, ordersAdd: ordersAdd,
     qs: qs, escapeHtml: escapeHtml,
-    photoPlaceholder: photoPlaceholder, availabilityBadge: availabilityBadge,
+    photoPlaceholder: photoPlaceholder, availabilityBadge: availabilityBadge, sideDirectionLabel: sideDirectionLabel,
     catalogItems: catalogItems, itemAvailability: itemAvailability, itemFreeForRange: itemFreeForRange
   };
 })(window);

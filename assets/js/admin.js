@@ -11,7 +11,7 @@
         side.positions.forEach(function (p) {
           rows.push({
             structureId: st.id, structureTitle: st.publicTitle || st.title, city: st.city,
-            sideCode: side.code, displayType: side.displayType,
+            sideCode: side.code, displayType: side.displayType, trafficType: st.trafficType,
             positionNumber: p.number, format: p.format, label: side.code + p.number,
             reach: RL_UTIL.reachFor(st.id, side.code)
           });
@@ -92,8 +92,10 @@
       var groupKey = r.structureId + "-" + r.sideCode;
       if (groupKey !== lastGroup) {
         var fmt = RL.formats[r.format];
+        var dirLabel = r.sideCode !== "X" ? RL_UTIL.sideDirectionLabel(r.trafficType, r.sideCode) : "";
         body += '<tr class="adm-group"><td colspan="' + (months.length + 1) + '">' +
           RL_UTIL.escapeHtml(r.structureTitle) + " · сторона " + r.sideCode + " · " + r.city +
+          (dirLabel ? " · " + dirLabel : "") +
           '<span class="fmt-badge" style="background:' + fmt.color + '">' + RL_UTIL.escapeHtml(fmt.shortTitle) + "</span>" +
           "</td></tr>";
         lastGroup = groupKey;
@@ -117,7 +119,7 @@
     var bySide = {};
     ALL_ROWS.forEach(function (r) {
       var key = r.structureId + "-" + r.sideCode;
-      if (!bySide[key]) bySide[key] = { structureId: r.structureId, structureTitle: r.structureTitle, city: r.city, sideCode: r.sideCode, format: r.format, reach: r.reach, total: 0, idle: 0 };
+      if (!bySide[key]) bySide[key] = { structureId: r.structureId, structureTitle: r.structureTitle, city: r.city, sideCode: r.sideCode, trafficType: r.trafficType, format: r.format, reach: r.reach, total: 0, idle: 0 };
       bySide[key].total++;
       var st0 = RL_OCC.statusFor(r.structureId, r.sideCode, r.positionNumber, r.format, 0);
       var st1 = RL_OCC.statusFor(r.structureId, r.sideCode, r.positionNumber, r.format, 1);
@@ -134,8 +136,9 @@
       var fmt = RL.formats[e.format];
       var reachText = e.reach ? RL_UTIL.int(e.reach.total) + " конт./мес" : "охват уточняется";
       var href = "structure.html?id=" + e.structureId + (e.sideCode !== "X" ? "&side=" + e.sideCode : "");
+      var dirLabel = e.sideCode !== "X" ? RL_UTIL.sideDirectionLabel(e.trafficType, e.sideCode) : "";
       return '<div class="idle-row">' +
-        '<div class="info"><b>' + RL_UTIL.escapeHtml(e.structureTitle) + "</b> · сторона " + e.sideCode +
+        '<div class="info"><b>' + RL_UTIL.escapeHtml(e.structureTitle) + "</b> · сторона " + e.sideCode + (dirLabel ? " (" + dirLabel + ")" : "") +
           '<span class="fmt-badge" style="background:' + fmt.color + '">' + RL_UTIL.escapeHtml(fmt.shortTitle) + "</span>" +
           '<div class="meta">' + e.city + " · свободно " + e.idle + " из " + e.total + " позиций · " + reachText + "</div></div>" +
         '<a href="' + href + '" class="btn btn-outline btn-sm">Открыть карточку</a>' +
