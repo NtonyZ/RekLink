@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Проверка Яндекс Карт — ФОРУС</title>
+<style>
+  body { font-family: system-ui, "Segoe UI", Arial, sans-serif; margin: 0; padding: 24px; background: #f6f5fb; color: #16162a; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #666; font-size: 13px; margin-bottom: 20px; }
+  .wrap { display: grid; grid-template-columns: 420px 1fr; gap: 20px; align-items: start; }
+  #log { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 14px 16px; font-size: 13px; }
+  #log .row { padding: 6px 0; border-bottom: 1px dashed #e5e5ef; display: flex; gap: 8px; align-items: flex-start; }
+  #log .row:last-child { border-bottom: none; }
+  .ok { color: #1f9d55; font-weight: 700; }
+  .no { color: #c62828; font-weight: 700; }
+  .wait { color: #9a6b00; font-weight: 700; }
+  .what { flex: 1; }
+  .det { color: #666; font-size: 12px; display: block; margin-top: 2px; word-break: break-word; }
+  #map { width: 100%; height: 560px; border-radius: 10px; border: 1px solid #ddd; background: #fff; }
+  .keyform { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .keyform input { width: 100%; padding: 9px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-size: 13px; box-sizing: border-box; }
+  .keyform button { margin-top: 10px; padding: 9px 18px; border: none; border-radius: 8px; background: #3b2a98; color: #fff; font-weight: 600; cursor: pointer; }
+  .note { background: #fff6de; border: 1px solid #f0d98a; border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: #7a5b00; margin-bottom: 16px; }
+  #summary { margin-top: 14px; padding: 12px 14px; background: #eef; border-radius: 8px; font-size: 12.5px; display: none; white-space: pre-wrap; font-family: Consolas, monospace; }
+  .marker-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+  .cluster-dot { min-width: 30px; height: 30px; border-radius: 50%; background: #3b2a98; color: #fff; border: 2px solid #fff;
+                 display: flex; align-items: center; justify-content: center; font: 700 12px/1 system-ui; }
+  .pop { background: #fff; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.25); padding: 10px 12px; font-size: 12.5px; width: 190px; transform: translate(-50%, -100%) translateY(-16px); }
+</style>
+</head>
+<body>
+
+<h1>Проверка Яндекс Карт (JS API 3.0)</h1>
+<div class="sub">Страница проверяет по шагам, что именно работает с вашим ключом. Ключ никуда не сохраняется и не уходит в репозиторий — он живёт только в адресной строке.</div>
+
+<div class="note">
+  Откройте страницу так: <b>yandex-test.html?apikey=ВАШ_КЛЮЧ</b> — или вставьте ключ в поле ниже.
+  Затем пришлите мне содержимое серого блока «Отчёт» внизу списка.
+</div>
+
+<div class="keyform" id="keyform">
+  <label for="k" style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Ключ JavaScript API</label>
+  <input type="text" id="k" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+  <button id="go">Проверить</button>
+</div>
+
+<div class="wrap">
+  <div>
+    <div id="log"></div>
+    <div id="summary"></div>
+  </div>
+  <div id="map"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var steps = [];
+  var logEl = document.getElementById("log");
+
+  function step(name) {
+    var s = { name: name, state: "wait", detail: "" };
+    steps.push(s);
+    render();
+    return {
+      ok: function (d) { s.state = "ok"; s.detail = d || ""; render(); },
+      fail: function (d) { s.state = "no"; s.detail = d || ""; render(); }
+    };
+  }
+  function render() {
+    logEl.innerHTML = steps.map(function (s) {
+      var mark = s.state === "ok" ? '<span class="ok">✓</span>' : (s.state === "no" ? '<span class="no">✗</span>' : '<span class="wait">…</span>');
+      return '<div class="row">' + mark + '<span class="what">' + s.name +
+             (s.detail ? '<span class="det">' + s.detail + "</span>" : "") + "</span></div>";
+    }).join("");
+  }
+  function summary() {
+    var lines = steps.map(function (s) {
+      return (s.state === "ok" ? "OK  " : s.state === "no" ? "FAIL" : "??  ") + "  " + s.name + (s.detail ? "  — " + s.detail : "");
+    });
+    lines.push("userAgent: " + navigator.userAgent);
+    lines.push("origin: " + location.origin);
+    var el = document.getElementById("summary");
+    el.textContent = "ОТЧЁТ (пришлите этот текст):\n\n" + lines.join("\n");
+    el.style.display = "block";
+  }
+
+  function getKey() {
+    var p = new URLSearchParams(location.search).get("apikey");
+    return p ? p.trim() : "";
+  }
+
+  document.getElementById("go").addEventListener("click", function () {
+    var v = document.getElementById("k").value.trim();
+    if (v) location.search = "?apikey=" + encodeURIComponent(v);
+  });
+
+  var KEY = getKey();
+  if (!KEY) return;
+  document.getElementById("keyform").style.display = "none";
+
+  // ---- 1. Загрузка библиотеки ----
+  var sLoad = step("Загрузка api-maps.yandex.ru/v3 с ключом");
+  var tag = document.createElement("script");
+  tag.src = "https://api-maps.yandex.ru/v3/?apikey=" + encodeURIComponent(KEY) + "&lang=ru_RU";
+  tag.onerror = function () {
+    sLoad.fail("Скрипт не загрузился. Обычно это 403: ключ не принят с этого адреса. Откройте ссылку из тега напрямую в браузере — увидите текст ошибки.");
+    summary();
+  };
+  tag.onload = function () {
+    sLoad.ok("библиотека получена");
+    boot();
+  };
+  document.head.appendChild(tag);
+
+  function boot() {
+    var sReady = step("ymaps3.ready");
+    if (typeof window.ymaps3 === "undefined") {
+      sReady.fail("глобальный объект ymaps3 не появился");
+      summary();
+      return;
+    }
+    ymaps3.ready.then(function () {
+      sReady.ok("API инициализирован");
+      buildMap();
+    }).catch(function (e) {
+      sReady.fail(String(e && e.message || e));
+      summary();
+    });
+  }
+
+  // Витебск: несколько реальных точек, включая две стороны в одной координате —
+  // именно на них проверяется кластеризация.
+  var POINTS = [
+    { id: "S1-A", lng: 30.185855, lat: 55.195124, color: "#7b1fa2", title: "Вокзал 1 R · сторона A" },
+    { id: "S1-B", lng: 30.185855, lat: 55.195124, color: "#3b2a98", title: "Вокзал 1 R · сторона B" },
+    { id: "S6-A", lng: 30.203174, lat: 55.192466, color: "#e5ac04", title: "Замковая, 19 · сторона A" },
+    { id: "S11-A", lng: 30.194721, lat: 55.194147, color: "#7b1fa2", title: "Кирова, 12 · сторона A" },
+    { id: "S43-A", lng: 30.220090, lat: 55.170280, color: "#e5ac04", title: "Строителей, 15В · сторона A" }
+  ];
+
+  function buildMap() {
+    var map, YM;
+    var sMap = step("Создание карты (YMap + YMapDefaultSchemeLayer)");
+    try {
+      YM = ymaps3;
+      map = new YM.YMap(document.getElementById("map"), {
+        location: { center: [30.205, 55.19], zoom: 12 }
+      });
+      map.addChild(new YM.YMapDefaultSchemeLayer());
+      sMap.ok("карта отрисована");
+    } catch (e) {
+      sMap.fail(String(e && e.message || e));
+      summary();
+      return;
+    }
+
+    var sFeat = step("Слой объектов (YMapDefaultFeaturesLayer)");
+    try {
+      map.addChild(new YM.YMapDefaultFeaturesLayer());
+      sFeat.ok("слой добавлен");
+    } catch (e) {
+      sFeat.fail(String(e && e.message || e));
+    }
+
+    // ---- Своя метка с HTML внутри ----
+    var sMarker = step("Своя метка: new YMapMarker({coordinates}, htmlElement)");
+    var markerWorks = false;
+    try {
+      var el = document.createElement("div");
+      el.className = "marker-dot";
+      el.style.background = POINTS[2].color;
+      map.addChild(new YM.YMapMarker({ coordinates: [POINTS[2].lng, POINTS[2].lat] }, el));
+      markerWorks = true;
+      sMarker.ok("метка принята вторым аргументом");
+    } catch (e) {
+      sMarker.fail(String(e && e.message || e));
+    }
+
+    // ---- Клик по метке ----
+    var sClick = step("Клик по метке (onClick в props)");
+    try {
+      var el2 = document.createElement("div");
+      el2.className = "marker-dot";
+      el2.style.background = POINTS[3].color;
+      el2.style.cursor = "pointer";
+      var popup = null;
+      var mk = new YM.YMapMarker({
+        coordinates: [POINTS[3].lng, POINTS[3].lat],
+        onClick: function () {
+          if (popup) { map.removeChild(popup); popup = null; return; }
+          var p = document.createElement("div");
+          p.className = "pop";
+          p.innerHTML = "<b>" + POINTS[3].title + "</b><br>Попап работает";
+          popup = new YM.YMapMarker({ coordinates: [POINTS[3].lng, POINTS[3].lat] }, p);
+          map.addChild(popup);
+        }
+      }, el2);
+      map.addChild(mk);
+      sClick.ok("обработчик назначен — нажмите фиолетовую метку на карте");
+    } catch (e) {
+      sClick.fail(String(e && e.message || e));
+    }
+
+    // ---- Кластеризация ----
+    var sClus = step("Кластеризация: ymaps3.import('@yandex/ymaps3-clusterer@0.0.1')");
+    if (!ymaps3.import) {
+      sClus.fail("ymaps3.import отсутствует");
+      summary();
+      return;
+    }
+    ymaps3.import("@yandex/ymaps3-clusterer@0.0.1").then(function (pkg) {
+      var names = Object.keys(pkg || {}).join(", ");
+      try {
+        var YMapClusterer = pkg.YMapClusterer, clusterByGrid = pkg.clusterByGrid;
+        if (!YMapClusterer || !clusterByGrid) {
+          sClus.fail("пакет загружен, но не нашлись YMapClusterer/clusterByGrid. Экспорт: " + names);
+          summary();
+          return;
+        }
+        var features = POINTS.map(function (p) {
+          return { type: "Feature", id: p.id, geometry: { type: "Point", coordinates: [p.lng, p.lat] }, properties: { t: p.title, c: p.color } };
+        });
+        var clusterer = new YMapClusterer({
+          method: clusterByGrid({ gridSize: 64 }),
+          features: features,
+          marker: function (f) {
+            var d = document.createElement("div");
+            d.className = "marker-dot";
+            d.style.background = f.properties.c;
+            d.title = f.properties.t;
+            return new YM.YMapMarker({ coordinates: f.geometry.coordinates }, d);
+          },
+          cluster: function (coordinates, feats) {
+            var d = document.createElement("div");
+            d.className = "cluster-dot";
+            d.textContent = feats.length;
+            return new YM.YMapMarker({ coordinates: coordinates }, d);
+          }
+        });
+        map.addChild(clusterer);
+        sClus.ok("кластеризация работает. Экспорт пакета: " + names);
+      } catch (e) {
+        sClus.fail("ошибка при построении: " + String(e && e.message || e) + ". Экспорт: " + names);
+      }
+      summary();
+    }).catch(function (e) {
+      sClus.fail("пакет не загрузился: " + String(e && e.message || e));
+      summary();
+    });
+  }
+})();
+</script>
+</body>
+</html>
