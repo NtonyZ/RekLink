@@ -1,4 +1,4 @@
-/* RekLink.by — карточка площадки. */
+/* forus.by — карточка площадки. */
 (function () {
   "use strict";
   RL_LAYOUT.render("");
@@ -28,7 +28,7 @@
     var format = isLed ? "led_screen" : (side.positions[0] ? side.positions[0].format : "poster_static");
     var fmt = RL.formats[format];
 
-    document.getElementById("page-title").textContent = structure.title + " — RekLink.by";
+    document.getElementById("page-title").textContent = structure.title + " — ФОРУС";
     document.getElementById("bc-title").textContent = structure.publicTitle || structure.title;
     document.getElementById("sd-title").textContent = (structure.publicTitle || structure.title) + (side ? " · сторона " + side.code : "");
     document.getElementById("sd-address").textContent = structure.city + (structure.address ? ", " + structure.address : "") + (structure.landmark ? " (" + structure.landmark + ")" : "");

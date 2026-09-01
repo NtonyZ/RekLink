@@ -1,4 +1,4 @@
-/* RekLink.by — общие утилиты: форматирование, расчёты цены/охвата/сбора, медиаплан. */
+/* forus.by — общие утилиты: форматирование, расчёты цены/охвата/сбора, медиаплан. */
 (function (global) {
   "use strict";
 
@@ -228,7 +228,7 @@
   function leadTimesFor(format) {
     return RL.leadTimes.filter(function (lt) {
       if (format === "led_screen" || format === "indoor") return /Все форматы|Видеоформаты/.test(lt.format);
-      if (format === "media_poster") return /Все форматы|Медиа-постер|Видеоформаты/.test(lt.format);
+      if (format === "media_poster") return /Все форматы|Медиа-скроллер|Видеоформаты/.test(lt.format);
       return /Все форматы|Скроллер/.test(lt.format);
     });
   }

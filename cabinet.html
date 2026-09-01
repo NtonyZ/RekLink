@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Личный кабинет — RekLink.by</title>
+<title>Личный кабинет — ФОРУС</title>
 <link rel="stylesheet" href="assets/css/base.css">
 <style>
 .cab-tabs { display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:28px; }
@@ -39,7 +39,7 @@
 
   <div class="flex-between" style="flex-wrap:wrap; gap:12px">
     <h1>Личный кабинет</h1>
-    <div class="muted text-sm">ООО «Клиент Демо» · УНП 191234567</div>
+    <div class="muted text-sm" id="acct-line">ООО «Клиент Демо» · УНП 191234567</div>
   </div>
 
   <div class="cab-tabs">
@@ -69,11 +69,11 @@
 
   <div id="tab-profile" style="display:none">
     <div class="card" style="padding:24px; max-width:500px">
-      <div class="field"><label>Наименование</label><input value="ООО «Клиент Демо»" disabled></div>
-      <div class="field"><label>УНП</label><input value="191234567" disabled></div>
-      <div class="field"><label>Контактное лицо</label><input value="Иван Иванов" disabled></div>
-      <div class="field"><label>Телефон</label><input value="+375 (29) 123-45-67" disabled></div>
-      <div class="field"><label>Адрес доставки документов</label><input value="210001, г. Витебск, ул. Смоленская, 10, офис 305" disabled></div>
+      <div class="field"><label>Наименование</label><input id="prof-name" value="ООО «Клиент Демо»" disabled></div>
+      <div class="field"><label>УНП</label><input id="prof-unp" value="191234567" disabled></div>
+      <div class="field"><label>Контактное лицо</label><input id="prof-contact" value="Иван Иванов" disabled></div>
+      <div class="field"><label>Телефон</label><input id="prof-phone" value="+375 (29) 123-45-67" disabled></div>
+      <div class="field"><label>Адрес доставки документов</label><input id="prof-address" value="210001, г. Витебск, ул. Смоленская, 10, офис 305" disabled></div>
       <div class="field"><label>Персональная скидка</label><input value="5%" disabled></div>
     </div>
   </div>
@@ -85,9 +85,25 @@
 <script src="assets/js/occupancy.js"></script>
 <script src="assets/js/locations.js"></script>
 <script src="assets/js/utils.js"></script>
+<script src="assets/js/auth.js"></script>
 <script src="assets/js/layout.js"></script>
 <script>
 RL_LAYOUT.render("cabinet.html");
+RL_AUTH.guard("cabinet.html");
+
+// Если клиент зарегистрирован — показываем его реквизиты вместо демонстрационных
+(function () {
+  var u = RL_AUTH.current();
+  if (!u) return;
+  document.getElementById("acct-line").textContent =
+    (u.company || u.name) + (u.unp ? " · УНП " + u.unp : " · " + u.phone);
+  var f = { "prof-name": u.company || u.name, "prof-unp": u.unp, "prof-contact": u.name, "prof-phone": u.phone, "prof-address": u.address };
+  Object.keys(f).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el && f[id]) el.value = f[id];
+  });
+})();
+
 document.querySelectorAll(".cab-tabs button").forEach(function (btn) {
   btn.addEventListener("click", function () {
     document.querySelectorAll(".cab-tabs button").forEach(function (b) { b.classList.remove("active"); });
@@ -118,7 +134,7 @@ var STATUS_COLORS = {
 var DEMO_ORDERS = [
   {
     number: "№ 2026-041", total: 1170, status: "live",
-    meta: "Замковая, 19 · медиа-постер · авг–окт 2026",
+    meta: "Замковая, 19 · медиа-скроллер · авг–окт 2026",
     items: [{ structureId: "S6", side: "A", format: "media_poster", city: "Витебск", title: "Замковая, 19 (Универмаг)", months: 3 }],
     documents: [{ name: "Счёт-протокол № 2026-041", date: "28.07.2026", state: "подписан" }],
     renewalDue: true, renewalDate: "30.09.2026"
@@ -131,7 +147,7 @@ var DEMO_ORDERS = [
   },
   {
     number: "№ 2026-025", total: 780, status: "completed",
-    meta: "Строителей, 15В (ТРИО) · медиа-постер · май–июнь 2026",
+    meta: "Строителей, 15В (ТРИО) · медиа-скроллер · май–июнь 2026",
     items: [{ structureId: "S43", side: "A", format: "media_poster", city: "Витебск", title: "Строителей пр-т, 15В (ТЦ «ТРИО»)", months: 2 }],
     documents: [{ name: "Справка-расчёт по сбору за II квартал 2026", date: "10.07.2026" }]
   }

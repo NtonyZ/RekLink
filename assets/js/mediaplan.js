@@ -1,7 +1,8 @@
-/* RekLink.by — медиаплан: корзина площадок, итог, карта, форма заявки. */
+/* forus.by — медиаплан: корзина площадок, итог, карта, форма заявки. */
 (function () {
   "use strict";
   RL_LAYOUT.render("mediaplan.html");
+  if (!RL_AUTH.guard("mediaplan.html")) return;
 
   function findStructure(structureId) {
     if (structureId.indexOf("LED-") === 0) return RL.ledScreens.find(function (l) { return l.id === structureId; });
@@ -206,6 +207,19 @@
   var payerSel = document.getElementById("f-payer");
   function toggleUnp() { document.getElementById("f-unp-row").style.display = payerSel.value === "person" ? "none" : "flex"; }
   payerSel.addEventListener("change", toggleUnp);
+
+  // Вошедшему клиенту не нужно вводить свои реквизиты второй раз (п. 9.2 ТЗ)
+  var acct = RL_AUTH.current();
+  if (acct) {
+    document.getElementById("f-name").value = acct.name || "";
+    document.getElementById("f-phone").value = acct.phone || "";
+    document.getElementById("f-email").value = acct.email || "";
+    if (acct.type === "person") payerSel.value = "person";
+    else if (acct.type === "ip") payerSel.value = "entrepreneur";
+    else payerSel.value = "legal";
+    document.getElementById("f-unp").value = acct.unp || "";
+    document.getElementById("f-company").value = acct.company || "";
+  }
   toggleUnp();
 
   document.getElementById("f-unp").addEventListener("blur", function () {
