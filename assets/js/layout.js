@@ -37,11 +37,11 @@
         '<div class="header-cta">' +
           authLink() +
           '<a href="mediaplan.html" class="btn btn-ghost btn-sm">Медиаплан' + (count ? " (" + count + ")" : "") + "</a>" +
-          '<a href="catalog.html" class="btn btn-primary btn-sm">Подобрать место</a>' +
+          '<a href="podbor.html" class="btn btn-primary btn-sm">Подобрать место</a>' +
         "</div>" +
         '<button class="burger" id="burger-btn" aria-label="Меню">☰</button>' +
       "</div>" +
-      '<nav class="mobile-nav" id="mobile-nav">' + links + '<a href="catalog.html" class="btn btn-primary btn-block mt-24">Подобрать место</a>' + "</nav>";
+      '<nav class="mobile-nav" id="mobile-nav">' + links + '<a href="podbor.html" class="btn btn-primary btn-block mt-24">Подобрать место</a>' + "</nav>";
 
     var burger = document.getElementById("burger-btn");
     var mnav = document.getElementById("mobile-nav");
@@ -54,7 +54,7 @@
   // Сквозная полоса шагов: клиент всегда видит, на каком этапе он находится и что дальше.
   // Активный шаг задаётся на странице через <div id="site-steps" data-step="N">.
   var STEPS = [
-    { n: 1, label: "Выбор площадок", href: "catalog.html" },
+    { n: 1, label: "Выбор площадок", href: "podbor.html" },
     { n: 2, label: "Медиаплан", href: "mediaplan.html" },
     { n: 3, label: "Заявка", href: "mediaplan.html#apply-form" }
   ];

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Подбор рекламных площадок за 3 шага — ФОРУС</title>
+<meta name="description" content="Подберите наружную рекламу в Витебске и Полоцке за три шага: город и период, формат и бюджет, готовый список свободных площадок с охватом.">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.wiz { max-width:760px; margin:0 auto; }
+.wiz-nav { display:flex; gap:0; margin-bottom:32px; }
+.wiz-nav .n { flex:1; text-align:center; position:relative; padding-top:38px; font-size:13px; color:var(--muted); font-weight:600; }
+.wiz-nav .n::before {
+  content:attr(data-n); position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:30px; height:30px; border-radius:50%; background:var(--bg-soft); color:var(--muted);
+  display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; z-index:2;
+}
+.wiz-nav .n::after { content:""; position:absolute; top:15px; left:-50%; width:100%; height:2px; background:var(--line); z-index:1; }
+.wiz-nav .n:first-child::after { display:none; }
+.wiz-nav .n.active { color:var(--violet); }
+.wiz-nav .n.active::before { background:var(--grad); color:#fff; }
+.wiz-nav .n.done { color:var(--green); }
+.wiz-nav .n.done::before { content:"✓"; background:#e7f7ec; color:var(--green); }
+.wiz-nav .n.done::after { background:#bfe6cd; }
+.wiz-stage { display:none; }
+.wiz-stage.active { display:block; }
+.wiz-card { padding:28px; }
+.wiz-card h2 { font-size:20px; margin-bottom:6px; }
+.wiz-card .hint { color:var(--muted); font-size:13.5px; margin-bottom:22px; }
+.fmt-pick { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.fmt-pick label {
+  display:flex; gap:12px; align-items:flex-start; padding:14px 16px;
+  border:1.5px solid var(--line); border-radius:var(--radius-sm); cursor:pointer; transition:border-color .15s, background .15s;
+}
+.fmt-pick label:hover { border-color:var(--violet); }
+.fmt-pick input { margin-top:3px; flex-shrink:0; }
+.fmt-pick .t { font-weight:600; font-size:14px; display:block; }
+.fmt-pick .d { font-size:12.5px; color:var(--muted); display:block; margin-top:3px; }
+.fmt-pick .p { font-size:12.5px; font-weight:600; color:var(--violet); display:block; margin-top:5px; }
+.wiz-actions { display:flex; justify-content:space-between; gap:12px; margin-top:26px; }
+.res-item { display:flex; gap:14px; align-items:center; padding:12px 14px; border:1px solid var(--line); border-radius:var(--radius-sm); margin-bottom:10px; }
+.res-item .info { flex:1; min-width:0; }
+.res-item h4 { font-size:14px; margin:0 0 3px; }
+.res-item .meta { font-size:12px; color:var(--muted); }
+.res-item .price { font-weight:700; font-size:14px; white-space:nowrap; }
+.res-sum { display:flex; gap:26px; flex-wrap:wrap; background:var(--bg-soft); border-radius:var(--radius-sm); padding:18px 22px; margin-bottom:20px; }
+.res-sum b { display:block; font-size:20px; }
+.res-sum span { font-size:12px; color:var(--muted); }
+.err { color:var(--red); font-size:13px; margin-top:10px; }
+@media (max-width:640px){ .fmt-pick { grid-template-columns:1fr; } .wiz-nav .n { font-size:11.5px; } }
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Перейти к содержимому</a>
+<header id="site-header" class="site-header"></header>
+<div id="site-steps" class="site-steps" data-step="1"></div>
+
+<main id="main" class="container" style="padding:32px 24px 60px">
+  <div class="wiz">
+    <h1>Подбор площадок</h1>
+    <p class="muted mb-24">Три шага — и вы увидите, что свободно под вашу задачу, с ценой и охватом. Если предпочитаете выбирать сами, откройте <a href="catalog.html">полный каталог</a>.</p>
+
+    <div class="wiz-nav">
+      <div class="n active" id="n1" data-n="1">Где и когда</div>
+      <div class="n" id="n2" data-n="2">Что показываем</div>
+      <div class="n" id="n3" data-n="3">Результат</div>
+    </div>
+
+    <!-- Шаг 1 -->
+    <section class="wiz-stage active" id="w1">
+      <div class="card wiz-card">
+        <h2>Где и когда размещаемся</h2>
+        <p class="hint">Период нужен сразу: свободные места в августе и в декабре — это разные списки.</p>
+        <div class="field-row">
+          <div class="field">
+            <label for="p-city">Город</label>
+            <select id="p-city"><option value="">Любой город</option></select>
+          </div>
+          <div class="field">
+            <label for="p-start">Начало размещения</label>
+            <select id="p-start"></select>
+          </div>
+          <div class="field">
+            <label for="p-months">Срок</label>
+            <select id="p-months">
+              <option value="1">1 месяц</option>
+              <option value="2">2 месяца</option>
+              <option value="3" selected>3 месяца</option>
+              <option value="6">6 месяцев</option>
+              <option value="12">12 месяцев</option>
+            </select>
+          </div>
+        </div>
+        <div class="err" id="e1" style="display:none"></div>
+        <div class="wiz-actions">
+          <span></span>
+          <button class="btn btn-primary" id="to2">Дальше</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Шаг 2 -->
+    <section class="wiz-stage" id="w2">
+      <div class="card wiz-card">
+        <h2>Что показываем</h2>
+        <p class="hint">Отметьте подходящие форматы. Если не уверены — оставьте все, подбор сам расставит по цене за контакт.</p>
+        <div class="fmt-pick" id="p-formats"></div>
+        <div class="field mt-24" style="max-width:280px">
+          <label for="p-budget">Бюджет на весь период, BYN</label>
+          <input type="number" id="p-budget" min="0" step="50" placeholder="не ограничен">
+        </div>
+        <div class="err" id="e2" style="display:none"></div>
+        <div class="wiz-actions">
+          <button class="btn btn-ghost" id="back1">Назад</button>
+          <button class="btn btn-primary" id="to3">Показать площадки</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Шаг 3 -->
+    <section class="wiz-stage" id="w3">
+      <div class="card wiz-card">
+        <h2>Что подходит</h2>
+        <p class="hint" id="res-hint"></p>
+        <div class="res-sum" id="res-sum"></div>
+        <div id="res-list"></div>
+        <div id="res-empty" class="disclaimer" style="display:none">По этим условиям свободных мест не нашлось. Вернитесь назад и увеличьте бюджет, измените период или добавьте форматы.</div>
+        <div class="wiz-actions">
+          <button class="btn btn-ghost" id="back2">Назад</button>
+          <button class="btn btn-primary" id="to-plan">Добавить выбранное в медиаплан</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer id="site-footer" class="site-footer"></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/occupancy.js"></script>
+<script src="assets/js/locations.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/podbor.js"></script>
+</body>
+</html>

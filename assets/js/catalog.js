@@ -76,7 +76,15 @@
   monthSel.value = state.month;
   monthSel.addEventListener("change", function () { state.month = parseInt(monthSel.value, 10); refresh(); });
 
+  // Варианты типа показа строятся из справочника, иначе список расходится с данными:
+  // в фильтре не хватало «Видеоролика», и 9 сторон медиа-скроллеров было не отобрать.
   var dtypeSel = document.getElementById("f-dtype");
+  Object.keys(RL.displayTypeLabel).forEach(function (code) {
+    var o = document.createElement("option");
+    o.value = code;
+    o.textContent = RL.displayTypeLabel[code];
+    dtypeSel.appendChild(o);
+  });
   dtypeSel.value = state.dtype;
   dtypeSel.addEventListener("change", function () { state.dtype = dtypeSel.value; refresh(); });
 

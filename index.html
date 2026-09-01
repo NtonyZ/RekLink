@@ -68,7 +68,8 @@
             <option value="0">Показать все</option>
           </select>
         </div>
-        <button class="btn btn-primary btn-block" id="q-submit">Показать на карте</button>
+        <button class="btn btn-primary btn-block" id="q-submit">Подобрать за 3 шага</button>
+        <p class="text-sm muted text-center mt-24" style="margin-bottom:0">Или сразу <a href="map.html">открыть карту</a></p>
       </div>
     </div>
   </section>
@@ -188,7 +189,7 @@ RL_LAYOUT.render("index.html");
     if (fSel.value) params.set('format', fSel.value);
     if (cSel.value) params.set('city', cSel.value);
     if (document.getElementById('q-free').value === '1') params.set('free','1');
-    window.location.href = 'map.html?' + params.toString();
+    window.location.href = 'podbor.html?' + params.toString();
   });
 })();
 
