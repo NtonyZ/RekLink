@@ -356,6 +356,29 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; colo
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .hero h1 { font-size: 32px; }
 }
+/* Метка, кластер и всплывающая карточка на Яндекс Картах (в v3 своего балуна нет) */
+.rl-cluster {
+  min-width: 34px; height: 34px; padding: 0 8px; border-radius: 99px;
+  background: var(--violet); color: #fff; border: 2px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12.5px; font-weight: 700; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.ym-pop {
+  position: relative; width: 240px; padding: 12px 14px;
+  background: #fff; border-radius: var(--radius-sm); box-shadow: 0 6px 22px rgba(0,0,0,.28);
+  font-size: 12.5px; transform: translate(-50%, -100%) translateY(-14px);
+}
+.ym-pop::after {
+  content: ""; position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%);
+  border: 7px solid transparent; border-top-color: #fff; border-bottom: none;
+}
+.ym-pop-x {
+  position: absolute; top: 4px; right: 6px; border: none; background: none;
+  font-size: 17px; line-height: 1; color: var(--muted); cursor: pointer; padding: 2px 4px;
+}
+.ym-pop .pop-title { font-weight: 700; font-size: 13.5px; margin: 0 16px 4px 0; }
+
 /* Полоса шагов: 1 Выбор площадок → 2 Медиаплан → 3 Заявка */
 .site-steps { background: #fff; border-bottom: 1px solid var(--line); }
 .steps-inner { display: flex; align-items: center; gap: 10px; padding: 12px 24px; flex-wrap: wrap; }
