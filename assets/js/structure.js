@@ -139,10 +139,17 @@
     renderCalendar(side, format);
 
     // map
-    var map = L.map("sd-map", { zoomControl: true, scrollWheelZoom: false }).setView([structure.lat, structure.lng], 16);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap" }).addTo(map);
-    L.marker([structure.lat, structure.lng]).addTo(map).bindPopup(structure.publicTitle || structure.title);
-    setTimeout(function () { map.invalidateSize(); }, 200);
+    var map = RL_MAP.create("sd-map", {
+      center: [structure.lat, structure.lng], zoom: 16, scrollWheelZoom: false
+    });
+    if (map) {
+      map.setMarkers([{
+        id: structure.id, lat: structure.lat, lng: structure.lng,
+        color: fmt.color, size: 24,
+        popupHtml: RL_UTIL.escapeHtml(structure.publicTitle || structure.title)
+      }]);
+      map.invalidateSize(200);
+    }
 
     // booking panel
     initBooking(structure, side, format, fmt, isLed);

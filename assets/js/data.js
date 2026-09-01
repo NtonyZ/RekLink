@@ -344,8 +344,18 @@
     protectedPages: ["mediaplan.html", "cabinet.html"]
   };
 
+  // Карта. provider: "osm" (OpenStreetMap + Leaflet, работает без ключа) либо
+  // "yandex" (Яндекс Карты, JS API 3.0). Ключ выпускается в кабинете разработчика
+  // под продукт «JavaScript API и HTTP Геокодер» и ограничивается по HTTP Referer;
+  // секрет ключа здесь не нужен и в код страницы попадать не должен.
+  var MAPS = {
+    provider: "osm",
+    yandexApiKey: ""
+  };
+
   global.RL = {
     auth: AUTH,
+    maps: MAPS,
     seller: SELLER,
     formats: FORMATS,
     displayTypeLabel: DISPLAY_TYPE_LABEL,

@@ -148,20 +148,21 @@
 
   var map = null;
   function renderMap() {
-    if (!map) {
-      map = L.map("mp-map", { scrollWheelZoom: false });
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap" }).addTo(map);
-    }
+    if (!map) map = RL_MAP.create("mp-map", { scrollWheelZoom: false });
+    if (!map) return;
     var bounds = [];
-    items.forEach(function (item) {
+    map.setMarkers(items.map(function (item) {
       var st = item.structure;
-      var fmt = RL.formats[item.format];
-      var icon = L.divIcon({ className: "", html: '<div class="rl-marker" style="width:20px;height:20px;background:' + fmt.color + '"></div>', iconSize: [20, 20], iconAnchor: [10, 10] });
-      L.marker([st.lat, st.lng], { icon: icon }).addTo(map).bindPopup(item.title);
       bounds.push([st.lat, st.lng]);
-    });
-    if (bounds.length === 1) map.setView(bounds[0], 15); else map.fitBounds(bounds, { padding: [30, 30] });
-    setTimeout(function () { map.invalidateSize(); }, 150);
+      return {
+        id: item.structureId + (item.side ? "-" + item.side.code : ""),
+        lat: st.lat, lng: st.lng,
+        color: RL.formats[item.format].color,
+        popupHtml: RL_UTIL.escapeHtml(item.title)
+      };
+    }));
+    map.fitBounds(bounds);
+    map.invalidateSize(150);
   }
 
   // Площадки, для которых выбранный старт уже невозможен по срокам подготовки (п. 11.5 ТЗ)

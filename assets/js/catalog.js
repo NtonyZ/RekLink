@@ -100,30 +100,16 @@
       btn.classList.add("active");
       document.body.setAttribute("data-view", state.view);
       syncUrl();
-      setTimeout(function () { map.invalidateSize(); }, 50);
+      if (map) map.invalidateSize(50);
     });
   });
   document.body.setAttribute("data-view", state.view);
 
   // ---- Карта --------------------------------------------------------------
-  var map = L.map("cat-map", { scrollWheelZoom: true }).setView([55.19, 30.21], 13);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    maxZoom: 19
-  }).addTo(map);
-  var clusterGroup = L.markerClusterGroup({ maxClusterRadius: 50 });
-  map.addLayer(clusterGroup);
+  var map = RL_MAP.create("cat-map", { center: [55.19, 30.21], zoom: 13, cluster: true });
 
-  function iconFor(item, avail) {
-    var fmt = RL.formats[item.format];
-    var ringColor = avail === "free" ? "#1f9d55" : (avail === "partial" ? "#e5ac04" : "#c9506b");
-    return L.divIcon({
-      className: "",
-      html: '<div class="rl-marker" style="width:20px;height:20px;background:' + fmt.color + ";outline:3px solid " + ringColor + '"></div>',
-      iconSize: [20, 20],
-      iconAnchor: [10, 10],
-      popupAnchor: [0, -10]
-    });
+  function ringFor(avail) {
+    return avail === "free" ? "#1f9d55" : (avail === "partial" ? "#e5ac04" : "#c9506b");
   }
 
   function popupHtml(item, summary) {
@@ -149,22 +135,22 @@
     );
   }
 
-  var markers = {};
   function rebuildMarkers(filtered) {
-    clusterGroup.clearLayers();
-    markers = {};
-    filtered.forEach(function (item) {
+    if (!map) return;
+    map.setMarkers(filtered.map(function (item) {
       var summary = availabilityFor(item, state.month);
-      var avail = RL_OCC.availabilityLabel(summary);
-      var m = L.marker([item.lat, item.lng], { icon: iconFor(item, avail) });
-      m.bindPopup(popupHtml(item, summary));
-      m.on("popupopen", function (e) {
-        var btn = e.popup._contentNode.querySelector("[data-add]");
-        if (btn) btn.addEventListener("click", function () { addToPlan(item); });
-      });
-      clusterGroup.addLayer(m);
-      markers[item.id] = m;
-    });
+      return {
+        id: item.id,
+        lat: item.lat, lng: item.lng,
+        color: RL.formats[item.format].color,
+        ringColor: ringFor(RL_OCC.availabilityLabel(summary)),
+        popupHtml: popupHtml(item, summary),
+        onPopupOpen: function (node) {
+          var btn = node.querySelector("[data-add]");
+          if (btn) btn.addEventListener("click", function () { addToPlan(item); });
+        }
+      };
+    }));
   }
 
   function addToPlan(item) {
@@ -251,7 +237,7 @@
     listEl.querySelectorAll(".cat-item").forEach(function (el) {
       el.addEventListener("mouseenter", function () {
         var id = el.getAttribute("data-id");
-        if (markers[id]) markers[id].openPopup();
+        if (map) map.openPopup(id);
       });
     });
   }
@@ -266,7 +252,7 @@
 
   renderChips();
   refresh();
-  setTimeout(function () { map.invalidateSize(); }, 100);
+  if (map) map.invalidateSize(100);
 
-  window.__rlCatalog = { map: map, markers: markers, items: ALL_ITEMS };
+  window.__rlCatalog = { map: map, items: ALL_ITEMS };
 })();
