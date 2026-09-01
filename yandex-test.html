@@ -97,6 +97,16 @@
     if (v) location.search = "?apikey=" + encodeURIComponent(v);
   });
 
+  // Открытие файла двойным кликом даёт origin file://, который не совпадает ни с одним
+  // разрешённым доменом ключа — Яндекс отклонит его до всякой проверки. Ловим это сразу.
+  if (location.protocol === "file:") {
+    var sFile = step("Способ открытия страницы");
+    sFile.fail("Страница открыта как файл (origin: file://). Яндекс отклонит ключ независимо от настроек. " +
+      "Запустите serve.ps1 в папке проекта и откройте http://localhost:8791/yandex-test.html?apikey=ВАШ_КЛЮЧ");
+    summary();
+    return;
+  }
+
   var KEY = getKey();
   if (!KEY) return;
   document.getElementById("keyform").style.display = "none";
