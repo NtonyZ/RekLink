@@ -59,7 +59,7 @@
       var ring = m.ringColor ? ";outline:3px solid " + m.ringColor : "";
       return L.divIcon({
         className: "",
-        html: '<div class="rl-marker" style="width:' + size + "px;height:" + size + "px;background:" + m.color + ring + '"></div>',
+        html: '<div class="rl-marker' + (m.cls ? " " + m.cls : "") + '" style="width:' + size + "px;height:" + size + "px;background:" + m.color + ring + '"></div>',
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2],
         popupAnchor: [0, -size / 2]
@@ -151,7 +151,7 @@
     function dot(m) {
       var size = m.size || 20;
       var d = document.createElement("div");
-      d.className = "rl-marker";
+      d.className = "rl-marker" + (m.cls ? " " + m.cls : "");
       d.style.cssText = "width:" + size + "px;height:" + size + "px;background:" + m.color +
         (m.ringColor ? ";outline:3px solid " + m.ringColor : "");
       if (m.popupHtml) d.style.cursor = "pointer";

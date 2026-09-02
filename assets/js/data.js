@@ -329,6 +329,40 @@
     maxTotalPercent: 20
   };
 
+  // ---- Объекты indoor (Приложение Б) --------------------------------------
+  // Источник: «информация по объектам РБ.xlsx», лист 16.01.2026 — там же число
+  // мониторов и диагональ. active:false — объект временно не вещает (нет плеера
+  // Yodeck), такие показываются на карте приглушённо.
+  // Координаты получены геокодированием адресов (OpenStreetMap Nominatim);
+  // checked:false — геокодер попал в соседнее заведение, точку должен
+  // подтвердить технический отдел.
+  var INDOOR_OBJECTS = [
+    { id: "I3",  net: "GREEN",  city: "Минск",      addr: "ул. Мстиславца, 11 (ТЦ «Дана Молл»)", mon: 1, diag: "2040×1000", lat: 53.9333123, lng: 27.6516481, active: true,  checked: false },
+    { id: "I4",  net: "GREEN",  city: "Витебск",    addr: "ул. Чкалова, 35 (ТЦ «GREEN»)",        mon: 4, diag: "50\"",      lat: 55.1625562, lng: 30.2080836, active: true,  checked: true },
+    { id: "I5",  net: "САНТА",  city: "Могилёв",    addr: "Минское шоссе, 40",                   mon: 2, diag: "43\"",      lat: 53.9333841, lng: 30.2547182, active: true,  checked: true },
+    { id: "I6",  net: "САНТА",  city: "Могилёв",    addr: "ул. Габровская, 32",                  mon: 2, diag: "50\"",      lat: 53.8688798, lng: 30.3483429, active: true,  checked: true },
+    { id: "I7",  net: "САНТА",  city: "Могилёв",    addr: "ул. Ямницкая, 97б",                   mon: 2, diag: "50\"",      lat: 53.8937319, lng: 30.2673377, active: false, checked: false },
+    { id: "I8",  net: "САНТА",  city: "Витебск",    addr: "пр-т Московский, 86",                 mon: 3, diag: "43\"",      lat: 55.1763679, lng: 30.2477612, active: true,  checked: true },
+    { id: "I9",  net: "САНТА",  city: "Минск",      addr: "пр-т Дзержинского, 106",              mon: 2, diag: "43\"",      lat: 53.8584566, lng: 27.4765522, active: true,  checked: true },
+    { id: "I10", net: "САНТА",  city: "Минск",      addr: "ул. Рафиева, 64",                     mon: 2, diag: "50\"",      lat: 53.8627945, lng: 27.4418343, active: true,  checked: true },
+    { id: "I11", net: "САНТА",  city: "Минск",      addr: "пр-т Победителей, 1",                 mon: 2, diag: "43\"",      lat: 53.9051229, lng: 27.5525373, active: false, checked: false },
+    { id: "I12", net: "САНТА",  city: "Минск",      addr: "ул. Кижеватого, 72-1",                mon: 2, diag: "43\"",      lat: null,       lng: null,       active: false, checked: false },
+    { id: "I13", net: "Дионис", city: "Витебск",    addr: "ул. Ивановского, 36",                 mon: 2, diag: "43\"",      lat: 55.1643452, lng: 30.2757681, active: true,  checked: true },
+    { id: "I14", net: "Дионис", city: "Полоцк",     addr: "ул. Октябрьская, 42",                 mon: 2, diag: "43\"",      lat: 55.4907637, lng: 28.7820573, active: true,  checked: true },
+    { id: "I15", net: "Дионис", city: "Полоцк",     addr: "ул. Бровки, 45",                      mon: 2, diag: "43\"",      lat: 55.4723038, lng: 28.7668281, active: true,  checked: true },
+    { id: "I16", net: "Дионис", city: "Полоцк",     addr: "ул. Зодчего Иоанна",                  mon: 2, diag: "43\"",      lat: 55.4933724, lng: 28.7482479, active: false, checked: false },
+    { id: "I17", net: "Дионис", city: "Полоцк",     addr: "ул. Зыгина, 57а",                     mon: 2, diag: "43\"",      lat: 55.4962490, lng: 28.7575046, active: false, checked: false },
+    { id: "I18", net: "Дионис", city: "Новополоцк", addr: "ул. Молодёжная, 177а",                mon: 2, diag: "50\", 43\"", lat: 55.5150966, lng: 28.6913827, active: true,  checked: true },
+    { id: "I19", net: "Дионис", city: "Новополоцк", addr: "ул. Молодёжная, 217",                 mon: 2, diag: "43\"",      lat: 55.5094247, lng: 28.7000823, active: true,  checked: true },
+    { id: "I20", net: "Дионис", city: "Новополоцк", addr: "ул. Молодёжная, 65",                  mon: 2, diag: "43\"",      lat: 55.5341091, lng: 28.6534675, active: true,  checked: false },
+    { id: "I21", net: "Дионис", city: "Новополоцк", addr: "ул. Молодёжная, 18",                  mon: 2, diag: "43\"",      lat: 55.5408481, lng: 28.6301366, active: false, checked: true },
+    { id: "I22", net: "Дионис", city: "Новополоцк", addr: "ул. Молодёжная, 139",                 mon: 2, diag: "50\"",      lat: 55.5276805, lng: 28.6745974, active: false, checked: true },
+    { id: "I23", net: "Дионис", city: "Новополоцк", addr: "ул. Блохина, 6",                      mon: 2, diag: "43\"",      lat: 55.5332678, lng: 28.6334412, active: false, checked: true },
+    { id: "I24", net: "Дионис", city: "Гомель",     addr: "пр-т Победы, 29",                     mon: 2, diag: "43\"",      lat: 52.4323041, lng: 30.9940975, active: true,  checked: true },
+    { id: "I25", net: "Дионис", city: "Минск",      addr: "ул. Могилёвская, 12",                 mon: 2, diag: "43\"",      lat: 53.8840492, lng: 27.5437962, active: true,  checked: false },
+    { id: "I26", net: "Дионис", city: "Минск",      addr: "ул. Руссиянова, 7",                   mon: 2, diag: "43\"",      lat: 53.9385746, lng: 27.6858652, active: true,  checked: true }
+  ];
+
   var FEE_INFO = {
     decree: "Указ Президента Республики Беларусь от 31.03.2022 № 131",
     outdoorRate: 10,
@@ -367,6 +401,7 @@
     ledScreenRates: LED_SCREEN_RATES,
     reach: REACH_RECORDS,
     indoorNetworks: INDOOR_NETWORKS,
+    indoorObjects: INDOOR_OBJECTS,
     leadTimes: LEAD_TIMES,
     discounts: DISCOUNTS,
     feeInfo: FEE_INFO,

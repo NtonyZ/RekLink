@@ -45,6 +45,11 @@ while ($listener.IsListening) {
       $ct = $mime[$ext]
       if (-not $ct) { $ct = "application/octet-stream" }
       $res.ContentType = $ct
+      # Локальный сервер отдаёт всё без кэша: иначе браузер держит старые
+      # css и js, и правки «не появляются» — при тестировании это сбивает с толку.
+      $res.AddHeader("Cache-Control", "no-store, no-cache, must-revalidate")
+      $res.AddHeader("Pragma", "no-cache")
+      $res.AddHeader("Expires", "0")
       $bytes = [System.IO.File]::ReadAllBytes($full)
       $res.ContentLength64 = $bytes.Length
       $res.OutputStream.Write($bytes, 0, $bytes.Length)
