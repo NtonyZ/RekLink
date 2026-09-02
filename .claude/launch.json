@@ -3,6 +3,8 @@
   "configurations": [
     {
       "name": "reklink",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "serve.ps1"],
       "url": "http://localhost:8791",
       "port": 8791
     }

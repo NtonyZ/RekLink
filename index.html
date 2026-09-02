@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Наружная реклама в Витебске и Полоцке — скроллеры и медиа-скроллеры ФОРУС</title>
-<meta name="description" content="Каталог рекламных конструкций, карта, калькулятор бюджета и онлайн-заявка на размещение наружной рекламы в Витебске и Полоцке.">
+<title>Реклама в Витебске, Полоцке, Минске, Могилёве, Гомеле и Новополоцке — ФОРУС</title>
+<meta name="description" content="Скроллеры, медиа-скроллеры и LED-экраны в Витебске и Полоцке, видеопанели в торговых сетях Минска, Могилёва, Гомеля и Новополоцка. Каталог, карта, калькулятор бюджета и заявка онлайн.">
 <link rel="stylesheet" href="assets/css/base.css">
 <style>
 .step-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:20px; }
@@ -27,6 +27,12 @@
 .hero-form { background:#fff; border-radius:var(--radius); padding:20px; box-shadow:var(--shadow); color:var(--ink); max-width:400px; }
 .hero-form h3 { font-size:16px; margin-bottom:14px; }
 .hero-wrap { display:grid; grid-template-columns:1.2fr .8fr; gap:40px; align-items:center; }
+.geo-card { padding:22px; display:flex; flex-direction:column; gap:8px; transition:transform .15s, box-shadow .15s; }
+.geo-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); }
+.geo-card .city { font-size:17px; font-weight:700; }
+.geo-card .cnt { font-size:13px; color:var(--muted); }
+.geo-card .fmts { display:flex; gap:6px; flex-wrap:wrap; margin-top:2px; }
+.geo-card .fmts span { font-size:11px; font-weight:600; color:#fff; border-radius:99px; padding:3px 9px; }
 @media (max-width: 980px) { .hero-wrap{grid-template-columns:1fr;} .step-grid{grid-template-columns:repeat(2,1fr);} }
 </style>
 </head>
@@ -39,8 +45,8 @@
     <div class="container inner hero-wrap">
       <div>
         <span class="eyebrow" style="background:rgba(255,255,255,.15); color:#fff">Один оператор — все форматы</span>
-        <h1>Наружная и Indoor-реклама в Витебске и Полоцке</h1>
-        <p class="lead">Смотрите свободные места на карте, узнавайте охват и цену без звонка менеджеру и оформляйте заявку онлайн — от одного скроллера до полной рекламной кампании.</p>
+        <h1>Наружная и Indoor-реклама в шести городах Беларуси</h1>
+        <p class="lead">Скроллеры, медиа-скроллеры и LED-экраны в Витебске и Полоцке, видеопанели в торговых сетях Минска, Могилёва, Гомеля и Новополоцка. Свободные места на карте, охват и цена без звонка менеджеру, заявка онлайн.</p>
         <div class="flex gap-12 mt-24" style="flex-wrap:wrap">
           <a href="catalog.html" class="btn btn-gold">Смотреть каталог мест</a>
           <a href="calculator.html" class="btn btn-outline" style="border-color:rgba(255,255,255,.4); color:#fff">Рассчитать бюджет</a>
@@ -88,6 +94,17 @@
   <section class="section section-soft">
     <div class="container">
       <div class="section-head">
+        <span class="eyebrow">География</span>
+        <h2>Где мы размещаем</h2>
+        <p>Скроллеры и LED-экраны — в Витебске и Полоцке. Видеопанели в торговых сетях работают ещё в четырёх городах: Минск, Могилёв, Гомель, Новополоцк.</p>
+      </div>
+      <div class="grid-3" id="geo-cards"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
         <span class="eyebrow">Товарный запас</span>
         <h2>Свободно прямо сейчас</h2>
         <p>Позиции, которые простаивают дольше всего, — с реальным охватом там, где данные МТС уже загружены.</p>
@@ -99,7 +116,7 @@
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section-soft">
     <div class="container">
       <div class="section-head">
         <span class="eyebrow">Как это работает</span>
@@ -115,7 +132,7 @@
     </div>
   </section>
 
-  <section class="section section-soft">
+  <section class="section">
     <div class="container">
       <div class="section-head">
         <span class="eyebrow">Почему ФОРУС</span>
@@ -157,10 +174,16 @@ RL_LAYOUT.render("index.html");
   var totalPositions = RL.structures.reduce(function(s,st){return s+st.totalPositions;},0);
   var el = document.getElementById('hero-stats');
   var years = SELLER_YEARS();
+  function CITY_WORD(n){
+    var mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'город';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'города';
+    return 'городов';
+  }
   var stats = [
     [RL.structures.length, 'конструкций'],
     [totalPositions, 'позиций'],
-    [RL.cities.length, 'города'],
+    [RL.cities.length, CITY_WORD(RL.cities.length)],
     [years, YEARS_WORD(years) + ' на рынке']
   ];
   function SELLER_YEARS(){ return new Date().getFullYear() - RL.seller.founded; }
@@ -181,7 +204,38 @@ RL_LAYOUT.render("index.html");
     return 'позиций';
   }
   document.getElementById('benefit-positions').textContent =
-    totalPositions + ' ' + POSITIONS_WORD(totalPositions) + ' в Витебске и Полоцке';
+    totalPositions + ' ' + POSITIONS_WORD(totalPositions) + ' в ' + RL.cities.length + ' ' + CITY_WORD(RL.cities.length) + ' Беларуси';
+})();
+
+// География: города считаются по каталогу, поэтому список не разъезжается
+// с фильтрами и не требует правки текста при новой адресной программе.
+(function(){
+  var items = RL_UTIL.catalogItems();
+  var byCity = {};
+  items.forEach(function(it){
+    var c = byCity[it.city] || (byCity[it.city] = { n: 0, formats: {} });
+    c.n++;
+    c.formats[it.format] = (c.formats[it.format] || 0) + 1;
+  });
+  function PLACE_WORD(n){
+    var mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'площадка';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'площадки';
+    return 'площадок';
+  }
+  var order = Object.keys(byCity).sort(function(a,b){ return byCity[b].n - byCity[a].n; });
+  document.getElementById('geo-cards').innerHTML = order.map(function(city){
+    var c = byCity[city];
+    var chips = Object.keys(c.formats).map(function(code){
+      var f = RL.formats[code];
+      return '<span style="background:' + f.color + '">' + f.shortTitle + ' · ' + c.formats[code] + '</span>';
+    }).join('');
+    return '<a href="catalog.html?city=' + encodeURIComponent(city) + '" class="card geo-card">' +
+      '<span class="city">' + city + '</span>' +
+      '<span class="cnt">' + c.n + ' ' + PLACE_WORD(c.n) + ' в каталоге</span>' +
+      '<span class="fmts">' + chips + '</span>' +
+    '</a>';
+  }).join('');
 })();
 
 // format selects

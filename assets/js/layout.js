@@ -2,13 +2,15 @@
 (function (global) {
   "use strict";
 
+  // Шесть пунктов с длинными названиями не помещались в строку и переносились
+  // на вторую. Названия сокращены, «Медиаплан» вынесен в кнопки справа (он там
+  // и так был — дублировался), «Личный кабинет» стал «Кабинетом».
   var NAV = [
     { href: "catalog.html", label: "Каталог" },
     { href: "map.html", label: "Карта" },
+    { href: "formats.html", label: "Форматы" },
     { href: "calculator.html", label: "Калькулятор" },
-    { href: "formats.html", label: "Форматы рекламы" },
-    { href: "mediaplan.html", label: "Медиаплан" },
-    { href: "cabinet.html", label: "Личный кабинет" }
+    { href: "cabinet.html", label: "Кабинет" }
   ];
 
   // Вход/регистрация в шапке. Имя вошедшего клиента ведёт в кабинет.
@@ -25,23 +27,29 @@
     var el = document.getElementById("site-header");
     if (!el) return;
     var count = RL_UTIL.mpCount();
-    var links = NAV.map(function (n) {
+    function link(n) {
       var cls = n.href === active ? "active" : "";
-      var extra = n.href === "mediaplan.html" && count > 0 ? ' <span class="badge badge-gold" id="mp-count-badge">' + count + "</span>" : "";
-      return '<a href="' + n.href + '" class="' + cls + '">' + n.label + extra + "</a>";
-    }).join("");
+      return '<a href="' + n.href + '" class="' + cls + '">' + n.label + "</a>";
+    }
+    var links = NAV.map(link).join("");
+    var mpBadge = count ? ' <span class="badge badge-gold" id="mp-count-badge">' + count + "</span>" : "";
     el.innerHTML =
       '<div class="container inner">' +
         '<a href="index.html" class="logo"><span class="mark">Ф</span>forus.by</a>' +
         '<nav class="main-nav">' + links + "</nav>" +
         '<div class="header-cta">' +
           authLink() +
-          '<a href="mediaplan.html" class="btn btn-ghost btn-sm">Медиаплан' + (count ? " (" + count + ")" : "") + "</a>" +
+          '<a href="mediaplan.html" class="btn btn-ghost btn-sm' + (active === "mediaplan.html" ? " active" : "") + '">Медиаплан' + mpBadge + "</a>" +
           '<a href="podbor.html" class="btn btn-primary btn-sm">Подобрать место</a>' +
         "</div>" +
         '<button class="burger" id="burger-btn" aria-label="Меню">☰</button>' +
       "</div>" +
-      '<nav class="mobile-nav" id="mobile-nav">' + links + '<a href="podbor.html" class="btn btn-primary btn-block mt-24">Подобрать место</a>' + "</nav>";
+      // На узком экране блок кнопок скрыт, поэтому вход добавляем в само меню —
+      // иначе с телефона войти было бы неоткуда.
+      '<nav class="mobile-nav" id="mobile-nav">' + links +
+        link({ href: "mediaplan.html", label: "Медиаплан" + (count ? " (" + count + ")" : "") }) +
+        (global.RL_AUTH && RL_AUTH.current() ? link({ href: "cabinet.html", label: "Мой профиль" }) : link({ href: "register.html", label: "Войти или зарегистрироваться" })) +
+        '<a href="podbor.html" class="btn btn-primary btn-block mt-24">Подобрать место</a>' + "</nav>";
 
     var burger = document.getElementById("burger-btn");
     var mnav = document.getElementById("mobile-nav");
@@ -86,7 +94,8 @@
       '<div class="container">' +
         '<div class="footer-grid">' +
           '<div><a href="index.html" class="logo" style="color:#fff"><span class="mark">Ф</span>forus.by</a>' +
-            '<p style="margin-top:14px;max-width:280px">Портал продаж рекламного инвентаря ' + s.publicTitle + '. Indoor и outdoor реклама в Витебске и Беларуси.</p></div>' +
+            '<p style="margin-top:14px;max-width:280px">Портал продаж рекламного инвентаря ' + s.publicTitle +
+            '. Наружная и indoor-реклама: ' + RL.cities.join(", ") + '.</p></div>' +
           '<div><h4>Рекламные места</h4><ul>' +
             '<li><a href="catalog.html?format=poster_static">Статичный плакат</a></li>' +
             '<li><a href="catalog.html?format=poster_dynamic">Динамический скроллер</a></li>' +

@@ -3,7 +3,7 @@
   "use strict";
   RL_LAYOUT.render("calculator.html");
 
-  var FORMAT_ORDER = ["poster_static", "poster_dynamic", "media_poster", "led_screen"];
+  var FORMAT_ORDER = ["poster_static", "poster_dynamic", "media_poster", "led_screen", "indoor"];
   var ALL_ITEMS = RL_UTIL.catalogItems();
 
   // ---- переключение режимов --------------------------------------------------
@@ -95,7 +95,10 @@
     var totalReach = 0, reachCount = 0;
     picked.forEach(function (item) { if (item._reach) { totalReach += item._reach.total * months; reachCount++; } });
     var cpm = totalReach ? RL_UTIL.cpm(spent, totalReach) : null;
-    var fee = RL_UTIL.feeEstimate(spent, "poster_static");
+    // Ставка сбора зависит от формата: наружная реклама — 10%, видеопанели
+    // в помещениях — 20%. Считаем по каждой площадке, а не по всей сумме.
+    var feeAmount = 0;
+    picked.forEach(function (item) { feeAmount += RL_UTIL.feeEstimate(item.cost, item.format).amount; });
 
     document.getElementById("c-summary").innerHTML =
       '<div class="result-summary">' +
@@ -104,14 +107,14 @@
         '<div class="metric"><b>' + (totalReach ? RL_UTIL.int(totalReach) : "—") + '</b><span>контактов за период (' + reachCount + " из " + picked.length + " с данными)</span></div>" +
         (cpm ? '<div class="metric"><b>' + RL_UTIL.money(cpm) + '</b><span>цена за 1000 контактов</span></div>' : "") +
       "</div>" +
-      '<div class="disclaimer">Сбор за размещение рекламы справочно: ' + RL_UTIL.money(fee.amount) + ". Плательщик — рекламодатель. Совокупный охват — верхняя оценка: аудитории поверхностей могут пересекаться.</div>";
+      '<div class="disclaimer">Сбор за размещение рекламы справочно: ' + RL_UTIL.money(feeAmount) + ". Плательщик — рекламодатель. Совокупный охват — верхняя оценка: аудитории поверхностей могут пересекаться.</div>";
 
     document.getElementById("c-items").innerHTML = picked.map(function (item) {
       var fmt = RL.formats[item.format];
       var reachText = item._reach ? RL_UTIL.int(item._reach.total) + " конт./мес" : "охват уточняется";
       return (
         '<div class="result-item">' +
-          RL_UTIL.photoTile(item.structureId, item.sideCode, item.title, item.format, { height: "56px", style: "width:80px;flex-shrink:0", thumb: true }) +
+          RL_UTIL.photoTile(item.structureId, item.sideCode, item.net || item.title, item.format, { height: "56px", style: "width:80px;flex-shrink:0", thumb: true }) +
           '<div class="info"><h5>' + RL_UTIL.escapeHtml(item.title) + (item.sideCode ? " · " + item.sideCode : "") + '</h5>' +
           '<div class="meta">' + item.city + " · " + fmt.shortTitle + " · " + reachText + "</div></div>" +
           "<b>" + RL_UTIL.money(item.cost) + "</b>" +

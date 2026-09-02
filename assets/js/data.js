@@ -75,6 +75,9 @@
       shortTitle: "Indoor-экран",
       badge: "Indoor",
       color: "#1f9d55",
+      // Минимальный тариф сети: 15 секунд в пятиминутном блоке. Точная цена
+      // зависит от сети и длительности ролика — таблица на странице форматов.
+      priceMonth: 425,
       feeRate: 20,
       isOutdoor: false,
       description: "Экраны в прикассовых зонах гипермаркетов и торговых сетей."
@@ -269,7 +272,7 @@
   // ---- Видеореклама в помещениях (Приложение Б) ------------------------------
   var INDOOR_NETWORKS = [
     {
-      network: "santa", title: "Сеть САНТА", objects: 8,
+      network: "santa", netName: "САНТА", title: "Сеть САНТА", objects: 8,
       cities: ["Минск (4)", "Могилёв (3)", "Витебск (1)"],
       rate25: [655, 720, 790], rate5: [425, 470, 530],
       addresses: [
@@ -280,7 +283,7 @@
       ]
     },
     {
-      network: "dionis", title: "Сеть «Дионис»", objects: 14,
+      network: "dionis", netName: "Дионис", title: "Сеть «Дионис»", objects: 14,
       cities: ["Новополоцк (6)", "Полоцк (4)", "Минск (2)", "Витебск (1)", "Гомель (1)"],
       rate25: [655, 720, 790], rate5: [425, 470, 530],
       addresses: [
@@ -294,7 +297,7 @@
       ]
     },
     {
-      network: "green", title: "Сеть GREEN", objects: "2 объекта, 6 экранов",
+      network: "green", netName: "GREEN", title: "Сеть GREEN", objects: "2 объекта, 6 экранов",
       cities: ["Витебск (4 экрана)", "Минск (1 экран)"],
       rate25: [785, 825, 910], rate5: [515, 550, 600],
       addresses: [
@@ -390,6 +393,25 @@
     yandexApiKey: "aef2a4db-c036-4297-89c9-7c927f22d988"
   };
 
+  // ---- География --------------------------------------------------------------
+  // Города считаются по инвентарю, а не вписываются руками: раньше в списке
+  // стояли только Витебск и Полоцк, и Минска, Могилёва, Гомеля и Новополоцка
+  // не было ни в фильтрах, ни в текстах, хотя объекты там есть.
+  function citiesOf(lists) {
+    var count = {};
+    lists.forEach(function (list) {
+      list.forEach(function (o) {
+        if (!o.city) return;
+        count[o.city] = (count[o.city] || 0) + 1;
+      });
+    });
+    return Object.keys(count).sort(function (a, b) {
+      return count[b] - count[a] || a.localeCompare(b, "ru");
+    });
+  }
+  var OUTDOOR_CITIES = citiesOf([STRUCTURES, LED_SCREENS]);
+  var CITIES = citiesOf([STRUCTURES, LED_SCREENS, INDOOR_OBJECTS]);
+
   global.RL = {
     auth: AUTH,
     maps: MAPS,
@@ -405,6 +427,7 @@
     leadTimes: LEAD_TIMES,
     discounts: DISCOUNTS,
     feeInfo: FEE_INFO,
-    cities: ["Витебск", "Полоцк"]
+    cities: CITIES,
+    outdoorCities: OUTDOOR_CITIES
   };
 })(window);

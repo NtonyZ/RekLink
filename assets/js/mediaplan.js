@@ -6,6 +6,9 @@
 
   function findStructure(structureId) {
     if (structureId.indexOf("LED-") === 0) return RL.ledScreens.find(function (l) { return l.id === structureId; });
+    // Видеопанели в помещениях: идентификаторы вида I5. Без этой ветки панель,
+    // добавленная из каталога, молча пропадала из медиаплана.
+    if (/^I\d+$/.test(structureId)) return RL.indoorObjects.find(function (o) { return o.id === structureId; });
     return RL.structures.find(function (s) { return s.id === structureId; });
   }
   function findSide(structure, code) {
@@ -61,7 +64,7 @@
       }).join("");
       return (
         '<div class="mp-item" data-idx="' + idx + '">' +
-          RL_UTIL.photoTile(item.structureId, item.side ? item.side.code : null, item.title, item.format, { height: "84px", style: "width:110px;flex-shrink:0", thumb: true }) +
+          RL_UTIL.photoTile(item.structureId, item.side ? item.side.code : null, (item.structure && item.structure.net) || item.title, item.format, { height: "84px", style: "width:110px;flex-shrink:0", thumb: true }) +
           '<div class="info">' +
             "<h4>" + RL_UTIL.escapeHtml(item.title) + (item.side ? " · сторона " + item.side.code : "") + "</h4>" +
             '<div class="meta">' + item.city + " · " + fmt.shortTitle + "</div>" +

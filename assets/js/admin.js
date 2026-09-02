@@ -31,7 +31,8 @@
   var ALL_ROWS = buildRows();
 
   var citySel = document.getElementById("a-city");
-  RL.cities.forEach(function (c) { var o = document.createElement("option"); o.value = c; o.textContent = c; citySel.appendChild(o); });
+  // Адресная программа — только собственные конструкции, поэтому города наружные.
+  RL.outdoorCities.forEach(function (c) { var o = document.createElement("option"); o.value = c; o.textContent = c; citySel.appendChild(o); });
 
   // ---- состояние: фильтры и горизонт (переключение окна на 12 месяцев, п. 10.1.4) ----
   var state = { city: "", format: "", status: "", search: "" };

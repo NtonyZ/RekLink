@@ -36,10 +36,37 @@
         price: RL.ledScreenRates[0].month.s10
       });
     });
+    // Видеопанели в помещениях: без них в каталоге не было ни Минска, ни Могилёва,
+    // ни Гомеля, ни Новополоцка — половина городов компании была не найти поиском.
+    RL.indoorObjects.forEach(function (o) {
+      if (!o.lat || !o.lng) return;
+      items.push({
+        id: o.id, type: "indoor", structureId: o.id, sideCode: null,
+        structure: null, side: null, format: "indoor", displayType: "media",
+        lat: o.lat, lng: o.lng, city: o.city, title: o.addr,
+        net: o.net, monitors: o.mon, active: o.active,
+        price: indoorPrice(o.net)
+      });
+    });
     return items;
   }
 
+  // Цена indoor — минимальный тариф сети: 15 секунд в пятиминутном блоке.
+  function indoorPrice(netName) {
+    var net = null;
+    RL.indoorNetworks.forEach(function (n) { if (n.netName === netName) net = n; });
+    if (!net) return 425;
+    return Math.min.apply(null, net.rate5);
+  }
+
   function itemAvailability(item, offset) {
+    // Панель в помещении либо вещает, либо стоит без плеера — помесячной
+    // занятости у неё нет, ролик добавляется в общий плей-лист.
+    if (item.type === "indoor") {
+      return item.active
+        ? { free: 1, commercial: 0, social: 0, total: 1 }
+        : { free: 0, commercial: 1, social: 0, total: 1 };
+    }
     if (item.type === "led") {
       var st = RL_OCC.statusFor(item.structureId, "X", 1, "led_screen", offset);
       return { free: st === "commercial" ? 0 : 1, commercial: st === "commercial" ? 1 : 0, social: 0, total: 1 };

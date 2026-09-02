@@ -3,7 +3,7 @@
   "use strict";
   RL_LAYOUT.render("catalog.html");
 
-  var FORMAT_ORDER = ["poster_static", "poster_dynamic", "media_poster", "led_screen"];
+  var FORMAT_ORDER = ["poster_static", "poster_dynamic", "media_poster", "led_screen", "indoor"];
 
   var ALL_ITEMS = RL_UTIL.catalogItems();
   var availabilityFor = RL_UTIL.itemAvailability;
@@ -66,10 +66,20 @@
   }
 
   // ---- UI: селекты ------------------------------------------------------------
+  // Города и их количество берём из самого каталога: список не расходится
+  // с тем, что реально можно найти, и сразу видно, где инвентаря больше.
   var citySel = document.getElementById("f-city");
-  RL.cities.forEach(function (c) { var o = document.createElement("option"); o.value = c; o.textContent = c; citySel.appendChild(o); });
+  var cityCount = {};
+  ALL_ITEMS.forEach(function (it) { cityCount[it.city] = (cityCount[it.city] || 0) + 1; });
+  RL.cities.forEach(function (c) {
+    if (!cityCount[c]) return;
+    var o = document.createElement("option");
+    o.value = c;
+    o.textContent = c + " (" + cityCount[c] + ")";
+    citySel.appendChild(o);
+  });
   citySel.value = state.city;
-  citySel.addEventListener("change", function () { state.city = citySel.value; refresh(); });
+  citySel.addEventListener("change", function () { state.city = citySel.value; refresh(true); });
 
   var monthSel = document.getElementById("f-month");
   RL_OCC.monthList(12).forEach(function (m, i) { var o = document.createElement("option"); o.value = i; o.textContent = m.label; monthSel.appendChild(o); });
@@ -120,24 +130,44 @@
     return avail === "free" ? "#1f9d55" : (avail === "partial" ? "#e5ac04" : "#c9506b");
   }
 
+  // У панелей в помещениях нет карточки конструкции — ведём в описание формата.
+  function detailHref(item) {
+    if (item.type === "indoor") return "formats.html#indoor";
+    return "structure.html?id=" + item.structureId + (item.sideCode ? "&side=" + item.sideCode : "");
+  }
+
+  // Подпись на плитке без фотографии. Для панелей это название сети: адрес
+  // и так стоит заголовком карточки, дублировать его в картинке незачем.
+  function tileLabel(item) {
+    return item.net || item.title;
+  }
+
+  function metaLine(item) {
+    var parts = [item.city, RL.formats[item.format].shortTitle];
+    if (item.sideCode) parts.push("сторона " + item.sideCode);
+    if (item.net) parts.push("сеть " + item.net);
+    if (item.type === "indoor") parts.push(item.monitors + (item.monitors === 1 ? " экран" : " экрана"));
+    return parts.join(" · ");
+  }
+
   function popupHtml(item, summary) {
-    var fmt = RL.formats[item.format];
     var reach = reachForItem(item);
     var reachLine = reach
       ? RL_UTIL.int(reach.total) + " конт./мес · CPM " + RL_UTIL.money(RL_UTIL.cpm(item.price, reach.total))
       : "Охват уточняется";
     var freePositions = summary.free + summary.social;
-    var availText = item.type === "led"
-      ? (summary.free ? "Свободно" : "Занято")
-      : (freePositions + " своб. из " + summary.total);
-    var detailHref = "structure.html?id=" + item.structureId + (item.sideCode ? "&side=" + item.sideCode : "");
+    var availText = item.type === "indoor"
+      ? (item.active ? "Вещает" : "Сейчас не вещает")
+      : (item.type === "led"
+        ? (summary.free ? "Свободно" : "Занято")
+        : (freePositions + " своб. из " + summary.total));
     return (
-      '<div class="pop-photo">' + RL_UTIL.photoTile(item.structureId, item.sideCode, item.title, item.format, { height: "90px", sideBadge: !!item.sideCode }) + "</div>" +
+      '<div class="pop-photo">' + RL_UTIL.photoTile(item.structureId, item.sideCode, tileLabel(item), item.format, { height: "90px", sideBadge: !!item.sideCode }) + "</div>" +
       '<div class="pop-title">' + RL_UTIL.escapeHtml(item.title) + "</div>" +
-      '<div class="pop-meta">' + fmt.shortTitle + (item.sideCode ? " · сторона " + item.sideCode : "") + " · " + availText + "<br>" +
-        RL_UTIL.money(item.price) + " / мес · " + reachLine + "</div>" +
+      '<div class="pop-meta">' + metaLine(item) + " · " + availText + "<br>" +
+        (item.type === "indoor" ? "от " : "") + RL_UTIL.money(item.price) + " / мес · " + reachLine + "</div>" +
       '<div class="pop-actions">' +
-        '<a href="' + detailHref + '" class="btn-outline" style="border-radius:8px">Подробнее</a>' +
+        '<a href="' + detailHref(item) + '" class="btn-outline" style="border-radius:8px">Подробнее</a>' +
         '<button class="btn-primary" data-add="' + item.id + '">В медиаплан</button>' +
       "</div>"
     );
@@ -224,19 +254,20 @@
     listEl.innerHTML = items.map(function (item) {
       var summary = availabilityFor(item, state.month);
       var avail = RL_OCC.availabilityLabel(summary);
-      var fmt = RL.formats[item.format];
       var reach = reachForItem(item);
       var reachLine = reach ? RL_UTIL.int(reach.total) + " конт." : "охват уточняется";
-      var detailHref = "structure.html?id=" + item.structureId + (item.sideCode ? "&side=" + item.sideCode : "");
+      var badge = item.type === "indoor"
+        ? '<span class="badge ' + (item.active ? "badge-free" : "badge-busy") + '">' + (item.active ? "Вещает" : "Не вещает") + "</span>"
+        : RL_UTIL.availabilityBadge(avail);
       return (
-        '<a class="cat-item" href="' + detailHref + '" data-id="' + item.id + '">' +
-          RL_UTIL.photoTile(item.structureId, item.sideCode, item.title, item.format, { height: "72px", cls: "thumb", thumb: true }) +
+        '<a class="cat-item" href="' + detailHref(item) + '" data-id="' + item.id + '">' +
+          RL_UTIL.photoTile(item.structureId, item.sideCode, tileLabel(item), item.format, { height: "72px", cls: "thumb", thumb: true }) +
           '<div class="info">' +
             "<h4>" + RL_UTIL.escapeHtml(item.title) + "</h4>" +
-            '<div class="meta">' + item.city + " · " + fmt.shortTitle + (item.sideCode ? " · сторона " + item.sideCode : "") + " · " + reachLine + "</div>" +
+            '<div class="meta">' + metaLine(item) + " · " + reachLine + "</div>" +
             '<div class="price-row">' +
-              RL_UTIL.availabilityBadge(avail) +
-              "<b>" + RL_UTIL.money(item.price) + "/мес</b>" +
+              badge +
+              "<b>" + (item.type === "indoor" ? "от " : "") + RL_UTIL.money(item.price) + "/мес</b>" +
             "</div>" +
           "</div>" +
         "</a>"
@@ -250,16 +281,21 @@
     });
   }
 
-  function refresh() {
+  // fit=true — подогнать карту под отобранные метки. Нужно при смене города:
+  // инвентарь теперь в шести городах, и Минск с Могилёвом иначе остаются за экраном.
+  function refresh(fit) {
     syncUrl();
     var filtered = filterItems();
     var sorted = sortItems(filtered);
     renderList(sorted);
     rebuildMarkers(sorted);
+    if (fit && map && sorted.length) {
+      map.fitBounds(sorted.map(function (i) { return [i.lat, i.lng]; }), 40);
+    }
   }
 
   renderChips();
-  refresh();
+  refresh(true);
   if (map) map.invalidateSize(100);
 
   window.__rlCatalog = { map: map, items: ALL_ITEMS };

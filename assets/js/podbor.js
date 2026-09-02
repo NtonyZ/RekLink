@@ -3,7 +3,7 @@
   "use strict";
   RL_LAYOUT.render("");
 
-  var FORMAT_ORDER = ["poster_static", "poster_dynamic", "media_poster", "led_screen"];
+  var FORMAT_ORDER = ["poster_static", "poster_dynamic", "media_poster", "led_screen", "indoor"];
   var ALL_ITEMS = RL_UTIL.catalogItems();
 
   var state = { city: "", start: 0, months: 3, formats: FORMAT_ORDER.slice(), budget: 0 };
@@ -64,15 +64,15 @@
     var f = RL.formats[code];
     var price = code === "led_screen"
       ? "от " + RL_UTIL.money(RL.ledScreenRates[0].month.s10) + " / мес"
-      : RL_UTIL.money(f.priceMonth) + " / мес" + (f.printPrice ? " + печать " + RL_UTIL.money(f.printPrice) : "");
+      : (code === "indoor" ? "от " : "") + RL_UTIL.money(f.priceMonth) + " / мес" +
+        (f.printPrice ? " + печать " + RL_UTIL.money(f.printPrice) : "");
     return '<label><input type="checkbox" value="' + code + '" checked>' +
       '<span><span class="t">' + f.shortTitle + "</span>" +
       '<span class="d">' + RL_UTIL.escapeHtml(f.description) + "</span>" +
       '<span class="p">' + price + "</span></span></label>";
   }).join("");
 
-  // Формат из адреса отмечаем один; indoor в мастер не входит (продаётся через менеджера),
-  // на такой запрос оставляем все форматы отмеченными.
+  // Формат, пришедший в адресе страницы, отмечаем один — остальные снимаем.
   var qFormat = RL_UTIL.qs("format");
   if (qFormat && FORMAT_ORDER.indexOf(qFormat) !== -1) {
     fmtEl.querySelectorAll("input").forEach(function (i) { i.checked = (i.value === qFormat); });
@@ -172,7 +172,7 @@
         : "охват уточняется";
       return '<div class="res-item">' +
         '<input type="checkbox" data-idx="' + idx + '" checked>' +
-        RL_UTIL.photoTile(item.structureId, item.sideCode, item.title, item.format, { height: "48px", style: "width:64px;flex-shrink:0", thumb: true }) +
+        RL_UTIL.photoTile(item.structureId, item.sideCode, item.net || item.title, item.format, { height: "48px", style: "width:64px;flex-shrink:0", thumb: true }) +
         '<div class="info"><h4>' + RL_UTIL.escapeHtml(item.title) + (item.sideCode ? " · сторона " + item.sideCode : "") + "</h4>" +
         '<div class="meta">' + item.city + " · " + fmt.shortTitle + " · " + reachText + "</div></div>" +
         '<div class="price">' + RL_UTIL.money(item._cost) + "</div>" +
