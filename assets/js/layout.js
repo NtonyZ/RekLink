@@ -119,7 +119,7 @@
           "</ul></div>" +
         "</div>" +
         '<div class="footer-bottom">' +
-          "<span>© " + new Date().getFullYear() + " " + s.title + ". Продажа собственного рекламного инвентаря. Прототип портала forus.by по ТЗ v5.0.</span>" +
+          "<span>© " + new Date().getFullYear() + " " + s.title + ", УНП " + s.unp + ". Продажа собственного рекламного инвентаря. Прототип портала forus.by.</span>" +
           '<span>НДС не облагается · <a href="admin.html" style="color:inherit">Адресная программа (для сотрудников)</a></span>' +
         "</div>" +
       "</div>";
