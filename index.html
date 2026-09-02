@@ -122,7 +122,7 @@
         <h2>Реклама, которая опирается на данные</h2>
       </div>
       <div class="grid-2" style="gap:28px 40px">
-        <div class="benefit"><span class="ic">📍</span><div><h4>264 позиции в Витебске и Полоцке</h4><p>Скроллеры, медиа-скроллеры, LED-экраны и видеопанели — вся адресная программа в одном каталоге, а не в файле Excel.</p></div></div>
+        <div class="benefit"><span class="ic">📍</span><div><h4 id="benefit-positions"></h4><p>Скроллеры, медиа-скроллеры, LED-экраны и видеопанели — вся адресная программа в одном каталоге, а не в файле Excel.</p></div></div>
         <div class="benefit"><span class="ic">📊</span><div><h4>Охват МТС по каждой поверхности</h4><p>Там, где есть данные платформы МТС Охват, вы видите не только адрес, а реальное число контактов и цену за 1000 контактов.</p></div></div>
         <div class="benefit"><span class="ic">🗺️</span><div><h4>Карта вместо списка адресов</h4><p>Отметки на карте показывают доступность в выбранном периоде и группируются в кластеры при отдалении.</p></div></div>
         <div class="benefit"><span class="ic">⚡</span><div><h4>Заявка без звонка менеджеру</h4><p>Медиаплан, расчёт стоимости, справочная сумма сбора и форма заявки — самостоятельно, в любое время.</p></div></div>
@@ -171,6 +171,17 @@ RL_LAYOUT.render("index.html");
     return 'лет';
   }
   el.innerHTML = stats.map(function(s){return '<div class="stat"><b>'+s[0]+'</b><span>'+s[1]+'</span></div>';}).join('');
+
+  // Число позиций берётся из данных, а не вписывается в текст: адресная программа
+  // меняется, и вручную вписанные цифры расходятся с каталогом.
+  function POSITIONS_WORD(n){
+    var mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'позиция';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'позиции';
+    return 'позиций';
+  }
+  document.getElementById('benefit-positions').textContent =
+    totalPositions + ' ' + POSITIONS_WORD(totalPositions) + ' в Витебске и Полоцке';
 })();
 
 // format selects
