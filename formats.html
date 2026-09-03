@@ -112,12 +112,17 @@ var FACTS = {
 
 (function () {
   var order = ["poster_static", "poster_dynamic", "media_poster", "led_screen", "indoor"];
+  var VIDEO_FORMATS = ["media_poster", "led_screen", "indoor"];
   var icons = { poster_static: "🖼", poster_dynamic: "🔄", media_poster: "📺", led_screen: "🖥", indoor: "📶" };
   document.getElementById("fmt-list").innerHTML = order.map(function (code) {
     var f = RL.formats[code];
     var facts = FACTS[code].map(function (x) { return '<div class="f"><b>' + x[0] + "</b><span>" + x[1] + "</span></div>"; }).join("");
     var catalogLink = '<a href="catalog.html?format=' + code + '" class="btn btn-outline btn-sm mt-24">' +
       (code === "indoor" ? "Смотреть объекты в каталоге →" : "Смотреть свободные места →") + "</a>";
+    // Для видеоформатов сразу отвечаем на вопрос «а ролика у нас нет»
+    if (VIDEO_FORMATS.indexOf(code) !== -1) {
+      catalogLink += '<a href="services.html#brief" class="btn btn-ghost btn-sm mt-24" style="margin-left:10px">Ролика нет — сделаем →</a>';
+    }
     return (
       '<div class="fmt-block" id="' + code + '">' +
         '<div class="fmt-icon" style="background:' + f.color + '">' + icons[code] + "</div>" +

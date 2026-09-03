@@ -9,6 +9,7 @@
     { href: "catalog.html", label: "Каталог" },
     { href: "map.html", label: "Карта" },
     { href: "formats.html", label: "Форматы" },
+    { href: "services.html", label: "Услуги" },
     { href: "calculator.html", label: "Калькулятор" },
     { href: "cabinet.html", label: "Кабинет" }
   ];
@@ -104,6 +105,7 @@
             '<li><a href="formats.html">Все форматы</a></li>' +
           "</ul></div>" +
           '<div><h4>Портал</h4><ul>' +
+            '<li><a href="services.html">Видеопродакшн и сопровождение</a></li>' +
             '<li><a href="calculator.html">Калькулятор бюджета</a></li>' +
             '<li><a href="mediaplan.html">Медиаплан</a></li>' +
             '<li><a href="cabinet.html">Личный кабинет</a></li>' +

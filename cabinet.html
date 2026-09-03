@@ -194,7 +194,8 @@ function renderOrderCard(o, key) {
         '<span class="n">' + RL_UTIL.escapeHtml(o.number) + "</span>" +
         '<span class="meta">' + RL_UTIL.escapeHtml(o.meta) + "</span>" +
         '<span class="status-pill" style="background:' + colors[0] + ";color:" + colors[1] + '">' + o.status + " — " + STATUS_LABELS[o.status] + "</span>" +
-        "<b>" + RL_UTIL.money(o.total) + "</b>" +
+        // Бриф на видеопродакшн приходит без суммы: смета считается после разбора задачи
+        "<b>" + (o.total ? RL_UTIL.money(o.total) : "<span class='muted' style='font-weight:400'>смета уточняется</span>") + "</b>" +
         '<span class="chev">›</span>' +
       "</div>" +
       '<div class="order-detail" id="detail-' + key + '">' +
