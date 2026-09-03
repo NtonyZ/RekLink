@@ -171,15 +171,19 @@ RL_LAYOUT.render("services.html");
     );
   }).join("");
 
-  // Варианты в брифе — те же услуги, чтобы список не пришлось поддерживать дважды
+  // Варианты в брифе — те же услуги, чтобы список не пришлось поддерживать дважды.
+  // Группируем: 23 услуги сплошным списком выбирать неудобно.
   var kindSel = document.getElementById("b-kind");
   RL.services.forEach(function (g) {
+    var og = document.createElement("optgroup");
+    og.label = g.title;
     g.items.forEach(function (x) {
       var o = document.createElement("option");
       o.value = x[0];
       o.textContent = x[0];
-      kindSel.appendChild(o);
+      og.appendChild(o);
     });
+    kindSel.appendChild(og);
   });
   var o = document.createElement("option");
   o.value = "Пока не знаю";

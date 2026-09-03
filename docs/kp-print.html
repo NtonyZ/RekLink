@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Коммерческое предложение ФОРУСультра</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* Геометрия и цвета сняты с образца: полотно 1024x1448 (пропорция A4), поля 78.
+   Обложка — тёмно-синяя с оранжевой полосой 29 px сверху; страницы 2–5 белые,
+   на них оранжевая черта 107x3 под надзаголовком, светлые карточки #f4f6fa
+   с левой оранжевой полосой 3 px и тёмные врезки #0b1b33 во всю ширину колонки.
+   Единица --u переводит пиксели макета в миллиметры листа. */
+:root {
+  --u: 0.205078mm;          /* 210 мм / 1024 px */
+  --navy:  #0b1b33;
+  --navy2: #13294b;
+  --orange:#ff7a18;
+  --ink:   #10203a;
+  --body:  #3c4e6c;
+  --muted: #7386a5;
+  --soft:  #f4f6fa;
+  --soft2: #f7f9fc;
+  --line:  #e3e9f2;
+  --lineDark: #2b4470;
+  --onDark: #c7d3e4;
+  --onDarkDim: #9db0cb;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+@page { size: A4; margin: 0; }
+body {
+  font-family: Manrope, "Segoe UI", system-ui, Arial, sans-serif;
+  color: var(--body);
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.page {
+  position: relative;
+  width: 210mm;
+  height: 296.8mm;
+  background: #fff;
+  padding: calc(150 * var(--u)) calc(78 * var(--u)) calc(120 * var(--u));
+  overflow: hidden;
+  page-break-after: always;
+  display: flex;
+  flex-direction: column;
+}
+.page:last-child { page-break-after: auto; }
+
+/* ---------- обложка ---------- */
+.cover { background: var(--navy); color: var(--onDark); padding-top: calc(100 * var(--u)); }
+.cover::before {
+  content: "";
+  position: absolute; left: 0; top: 0;
+  width: 100%; height: calc(29 * var(--u));
+  background: var(--orange);
+}
+.cover h1 { color: #fff; }
+.cover .lead { color: var(--onDarkDim); }
+.cover .rule { background: var(--lineDark); }
+
+.head-row { display: flex; align-items: center; justify-content: space-between; }
+.logo { height: calc(44 * var(--u)); width: auto; }
+.co {
+  font-size: calc(13 * var(--u));
+  letter-spacing: calc(1.6 * var(--u));
+  text-transform: uppercase;
+  color: var(--onDarkDim);
+}
+
+h1 { font-size: calc(62 * var(--u)); line-height: 1.1; font-weight: 800; }
+h2 { font-size: calc(40 * var(--u)); line-height: 1.15; font-weight: 800; color: var(--ink); }
+h2 .thin { font-weight: 400; color: var(--body); }
+h3 { font-size: calc(24 * var(--u)); font-weight: 800; color: var(--ink); }
+p  { font-size: calc(16 * var(--u)); line-height: 1.6; }
+.lead { font-size: calc(19 * var(--u)); line-height: 1.5; color: var(--muted); }
+small { font-size: calc(14 * var(--u)); line-height: 1.55; color: var(--muted); display: block; }
+
+/* надзаголовок с оранжевой чертой 107x3 */
+.eyebrow {
+  font-size: calc(13 * var(--u));
+  letter-spacing: calc(2.4 * var(--u));
+  text-transform: uppercase;
+  color: var(--orange);
+  font-weight: 800;
+}
+.eyebrow::after {
+  content: "";
+  display: block;
+  width: calc(107 * var(--u));
+  height: calc(3 * var(--u));
+  background: var(--orange);
+  margin-top: calc(12 * var(--u));
+}
+
+.mt-s { margin-top: calc(14 * var(--u)); }
+.mt   { margin-top: calc(26 * var(--u)); }
+.mt-l { margin-top: calc(42 * var(--u)); }
+.spacer { flex: 1 1 auto; }
+
+/* врезка обложки: 700x182, левая оранжевая полоса 5 px */
+.cover .callout {
+  background: var(--navy2);
+  border-left: calc(5 * var(--u)) solid var(--orange);
+  padding: calc(26 * var(--u)) calc(30 * var(--u));
+  max-width: calc(700 * var(--u));
+}
+.cover .callout p { color: var(--onDark); }
+.cover .callout .eyebrow { color: var(--orange); }
+.cover .callout .eyebrow::after { display: none; }
+
+/* четыре карточки 202x172, оранжевая линия 2 px сверху */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: calc(20 * var(--u)); }
+.stat {
+  background: var(--navy2);
+  border-top: calc(2 * var(--u)) solid var(--orange);
+  padding: calc(22 * var(--u)) calc(18 * var(--u));
+  height: calc(172 * var(--u));
+}
+.stat b { display: block; font-size: calc(42 * var(--u)); font-weight: 800; color: #fff; line-height: 1; }
+.stat span { display: block; margin-top: calc(12 * var(--u)); font-size: calc(14 * var(--u)); color: var(--onDarkDim); line-height: 1.4; }
+
+/* ---------- внутренние страницы ---------- */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: calc(20 * var(--u)); }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(20 * var(--u)); }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: calc(21 * var(--u)); }
+
+.card {
+  background: var(--soft);
+  border-left: calc(3 * var(--u)) solid var(--orange);
+  padding: calc(22 * var(--u)) calc(24 * var(--u));
+}
+.card h4 { font-size: calc(19 * var(--u)); font-weight: 800; color: var(--ink); margin-bottom: calc(8 * var(--u)); }
+.card p { font-size: calc(15 * var(--u)); color: var(--body); }
+
+/* шаги: тонкая линия сверху, без заливки */
+.step { border-top: calc(2 * var(--u)) solid var(--line); padding-top: calc(16 * var(--u)); }
+.step .n { font-size: calc(30 * var(--u)); font-weight: 800; color: var(--orange); line-height: 1; }
+.step h4 { font-size: calc(17 * var(--u)); font-weight: 800; color: var(--ink); margin: calc(10 * var(--u)) 0 calc(6 * var(--u)); }
+.step p { font-size: calc(14 * var(--u)); color: var(--muted); }
+
+/* тёмная врезка во всю ширину колонки */
+.dark {
+  background: var(--navy);
+  color: var(--onDark);
+  padding: calc(28 * var(--u)) calc(32 * var(--u));
+}
+.dark h3 { color: #fff; }
+.dark h4 { color: #fff; font-size: calc(19 * var(--u)); font-weight: 800; margin-bottom: calc(6 * var(--u)); }
+.dark p, .dark li { color: var(--onDarkDim); font-size: calc(15 * var(--u)); line-height: 1.55; }
+.dark small { color: var(--onDarkDim); }
+.dark .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(26 * var(--u)); margin-top: calc(20 * var(--u)); }
+
+/* оранжевый финальный блок 868x315 */
+.orange { background: var(--orange); color: var(--ink); padding: calc(28 * var(--u)) calc(32 * var(--u)); }
+.orange h3 { color: var(--ink); }
+.orange p, .orange li { color: #2a1400; font-size: calc(16 * var(--u)); line-height: 1.6; }
+.orange ol { margin: calc(14 * var(--u)) 0 0 calc(20 * var(--u)); }
+.orange ol li { margin-bottom: calc(6 * var(--u)); }
+
+ul.dash { list-style: none; }
+ul.dash li {
+  font-size: calc(16 * var(--u));
+  line-height: 1.55;
+  color: var(--body);
+  padding: calc(11 * var(--u)) 0;
+  border-bottom: 1px solid var(--line);
+}
+ul.dash li:last-child { border-bottom: none; }
+ul.dash li b { color: var(--ink); }
+
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--navy);
+  color: #fff;
+  font-size: calc(13 * var(--u));
+  letter-spacing: calc(1.2 * var(--u));
+  text-transform: uppercase;
+  font-weight: 800;
+  text-align: left;
+  padding: calc(14 * var(--u)) calc(16 * var(--u));
+}
+td {
+  font-size: calc(15 * var(--u));
+  padding: calc(13 * var(--u)) calc(16 * var(--u));
+  color: var(--body);
+  vertical-align: top;
+}
+tbody tr:nth-child(odd) td { background: var(--soft2); }
+td:first-child { color: var(--ink); font-weight: 800; width: 34%; }
+
+.rule { height: 1px; background: var(--line); }
+.foot {
+  position: absolute;
+  left: calc(78 * var(--u));
+  right: calc(78 * var(--u));
+  bottom: calc(52 * var(--u));
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(13 * var(--u));
+  color: var(--muted);
+}
+.cover .foot { color: var(--onDarkDim); }
+.foot-rule {
+  position: absolute;
+  left: calc(78 * var(--u));
+  right: calc(78 * var(--u));
+  bottom: calc(81 * var(--u));
+  height: 1px;
+  background: var(--line);
+}
+.cover .foot-rule { background: var(--lineDark); }
+
+.contacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: calc(20 * var(--u)); }
+.contacts .c span { display: block; font-size: calc(12 * var(--u)); letter-spacing: calc(1.4 * var(--u)); text-transform: uppercase; color: var(--orange); font-weight: 800; margin-bottom: calc(8 * var(--u)); }
+.contacts .c b { font-size: calc(18 * var(--u)); color: var(--ink); font-weight: 800; }
+.contacts .c i { display: block; font-style: normal; font-size: calc(14 * var(--u)); color: var(--muted); margin-top: calc(5 * var(--u)); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<!-- ============ 1. Обложка ============ -->
+<section class="page cover">
+  <div class="head-row">
+    <img class="logo" src="../assets/img/logo-forus-light.png" alt="ФОРУС">
+    <div class="co">Производство и размещение рекламы · с 2005 года</div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <h1>Снимаем рекламу,<br>размещаем её<br>и считаем, кто увидел</h1>
+  <p class="lead mt">Медиа-скроллеры в Витебске, видеопанели в торговых сетях Минска, Могилёва,
+    Гомеля и Новополоцка, собственный видеопродакшн и онлайн-бронирование рекламных мест.
+    Один подрядчик вместо трёх, один договор и понятные цифры охвата до старта кампании.</p>
+
+  <div class="callout mt-l">
+    <div class="eyebrow">Скоро</div>
+    <p class="mt-s">Обновляем forus.by: адресная программа переезжает на сайт — выбор конструкции,
+      охваты и бронирование дат онлайн, без звонка менеджеру.</p>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="stats">
+    <div class="stat"><b>21</b><span>год на рынке indoor и outdoor-рекламы</span></div>
+    <div class="stat"><b>300+</b><span>рекламных мест в адресной программе</span></div>
+    <div class="stat"><b>6</b><span>городов: Витебск, Полоцк, Новополоцк, Минск, Могилёв, Гомель</span></div>
+    <div class="stat"><b>24/7</b><span>бронирование мест онлайн на forus.by</span></div>
+  </div>
+
+  <div class="foot-rule"></div>
+  <div class="foot"><span>Коммерческое предложение · 2026</span><span>forus.by</span></div>
+</section>
+
+<!-- ============ 2. Медиа-скроллеры ============ -->
+<section class="page">
+  <div class="eyebrow">Направление 01</div>
+  <h2 class="mt">Медиа-скроллеры <span class="thin">— самый новый формат<br>нашей адресной программы</span></h2>
+  <p class="mt">Мы выводим на улицы Витебска LED-медиа-скроллеры: светодиодная поверхность вместо
+    бумажного плаката. Изображение видно в дождь и в темноте, макет меняется удалённо за минуты,
+    а на одной конструкции последовательно идут несколько рекламодателей.</p>
+
+  <div class="spacer"></div>
+
+  <div class="grid2">
+    <div class="card"><h4>Видно круглосуточно</h4><p>Собственная подсветка держит контраст с семи утра до полуночи и в пасмурный день, когда обычный щит теряет половину контактов.</p></div>
+    <div class="card"><h4>Динамика вместо статики</h4><p>Смена кадров, движение, анимированный логотип. Глаз цепляется за движущееся изображение раньше, чем за неподвижное.</p></div>
+    <div class="card"><h4>Макет меняется за минуты</h4><p>Новая акция, новая цена, новый адрес — без печати, без монтажников и без простоя конструкции. Можно менять сообщение хоть каждый день.</p></div>
+    <div class="card"><h4>Дешевле входной билет</h4><p>Поверхность делится между несколькими рекламодателями, поэтому стоимость контакта ниже, чем при выкупе целого щита на месяц.</p></div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="dark">
+    <h3>Аналитика «МТС Охват»: цифры до подписания договора</h3>
+    <div class="cols">
+      <div><h4>Сколько</h4><p>человек фактически проходит и проезжает мимо конкретной конструкции — по данным о реальных перемещениях, а не по оценке «на глаз»</p></div>
+      <div><h4>Кто именно</h4><p>пол и возраст аудитории в этой точке города: вы платите за тех, кто вам нужен, а не за общий поток</p></div>
+      <div><h4>Куда идёт</h4><p>векторы движения и параметры видимости — прогноз эффективности размещения ещё на этапе планирования</p></div>
+    </div>
+  </div>
+  <small class="mt">Платформа работает на Big Data МТС. Отчёт по выбранным конструкциям готовим бесплатно,
+    до заключения договора и без обязательств с вашей стороны.</small>
+
+  <div class="foot-rule"></div>
+  <div class="foot"><span>2</span><span>ЧПУП «ФОРУСультра» · forus.by</span></div>
+</section>
+
+<!-- ============ 3. Бронирование онлайн ============ -->
+<section class="page">
+  <div class="eyebrow">Новое · запуск в этом сезоне</div>
+  <h2 class="mt">Бронирование рекламных мест <span class="thin">онлайн</span></h2>
+  <p class="mt">Мы обновляем forus.by. Вся адресная программа ФОРУСа переезжает в личный кабинет на сайте:
+    карта конструкций, свободные даты, охваты и счёт — без единого письма и звонка менеджеру.
+    Заявка размещается за несколько минут, в любое время суток.</p>
+
+  <div class="grid4 mt-l">
+    <div class="step"><div class="n">01</div><h4>Выбираете точку</h4><p>Карта города со всеми конструкциями, фотография каждой поверхности, формат и габариты.</p></div>
+    <div class="step"><div class="n">02</div><h4>Смотрите охват</h4><p>По каждому адресу — данные «МТС Охват»: трафик, пол и возраст аудитории.</p></div>
+    <div class="step"><div class="n">03</div><h4>Бронируете даты</h4><p>Календарь занятости в реальном времени. Свободный период закрепляется сразу.</p></div>
+    <div class="step"><div class="n">04</div><h4>Загружаете макет</h4><p>Готовый файл или заявка нашему продакшну. Договор и счёт формируются в кабинете.</p></div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="dark">
+    <h3>Что даёт личный кабинет</h3>
+    <ul class="dash" style="margin-top:calc(14 * var(--u))">
+      <li style="border-color:#2b4470"><b style="color:#fff">Планирование без переписки.</b> Не нужно запрашивать у менеджера список свободных мест и ждать ответа до завтра: занятость видна сразу.</li>
+      <li style="border-color:#2b4470"><b style="color:#fff">Кампания собирается за один вечер.</b> Отобрали пять адресов, сверили охваты, забронировали месяц, загрузили ролик.</li>
+      <li style="border-color:#2b4470"><b style="color:#fff">История и документы в одном месте.</b> Прошлые размещения, макеты, акты и счета хранятся в кабинете, а не в почтовой переписке за три года.</li>
+      <li><b style="color:#fff">Продакшн подключается в один клик.</b> Если макета нет, заявка на изготовление ролика уходит из того же окна.</li>
+    </ul>
+  </div>
+
+  <div class="grid2 mt">
+    <div class="card"><h4>Сетевому бизнесу</h4><p>Несколько городов и десятки адресов в одном окне: видно, где кампания идёт, где место освободилось и какой макет крутится сейчас. Небольшой компании так же просто взять одну конструкцию на две недели.</p></div>
+    <div class="card"><h4>Рекламным агентствам</h4><p>Медиаплан для клиента собирается без запросов и ожидания ответа: занятость, охваты и стоимость сразу на экране. Сравнить два адреса по цене контакта — минута вместо встречи.</p></div>
+  </div>
+  <small class="mt">Приглашаем вас в число первых пользователей обновлённого портала. Ранним клиентам
+    открываем доступ до публичного запуска и закрепляем адреса на сезон вперёд.</small>
+
+  <div class="foot-rule"></div>
+  <div class="foot"><span>3</span><span>ЧПУП «ФОРУСультра» · forus.by</span></div>
+</section>
+
+<!-- ============ 4. Видеопродакшн ============ -->
+<section class="page">
+  <div class="eyebrow">Направление 02</div>
+  <h2 class="mt">Видеопродакшн <span class="thin">— от ролика на 15 секунд<br>до фильма о предприятии</span></h2>
+  <p class="mt">Собственная производственная база: съёмка, монтаж, графика, озвучка, ИИ-инструменты.
+    Ролик сразу собирается под ту поверхность, где будет крутиться, поэтому перевёрстка макета
+    и потеря недели на согласования исключены.</p>
+
+  <div class="grid2 mt-l">
+    <div class="card"><h4>Рекламный ролик 10–30 секунд</h4><p>Для медиа-скроллеров, экранов, сайта и соцсетей. От статичного макета с дикторской озвучкой до динамичного видеоряда с графикой и звуковым дизайном.</p></div>
+    <div class="card"><h4>Корпоративное и юбилейное видео</h4><p>Фильм к дате компании, история производства, интервью с сотрудниками и ветеранами, ролик для выставки, для отчётного собрания и для раздела вакансий.</p></div>
+  </div>
+
+  <div class="dark mt">
+    <h3>Многосерийные ролики с сюжетом</h3>
+    <p class="mt-s">Один герой, одна история, 4–6 выпусков с развитием событий. Зритель досматривает серию
+      и ждёт следующую, а бренд получает несколько контактов с одной и той же аудиторией вместо одного.
+      Формат одинаково работает на уличных медиа-скроллерах, на экранах в торговых центрах и в ленте
+      соцсетей — и стоит заметно дешевле, чем четыре не связанных между собой ролика, потому что герой,
+      локация и графика разрабатываются один раз.</p>
+  </div>
+
+  <div class="grid2 mt">
+    <div class="card"><h4>Моушн-дизайн и 2D-анимация</h4><p>Анимация логотипа, брендированные заставки, инфографика в движении, анимированные титры.</p></div>
+    <div class="card"><h4>Контент для соцсетей</h4><p>Вертикальные видео под Reels, Shorts и TikTok. Одна съёмка нарезается на серию коротких роликов и работает месяц.</p></div>
+    <div class="card"><h4>Фотосъёмка</h4><p>Предметная и каталожная для сайта и маркетплейсов, репортаж с производства и мероприятий, портреты для HR-бренда.</p></div>
+    <div class="card"><h4>ИИ в продакшне</h4><p>Kling, Sora, апскейл и шумоподавление, генеративные вставки. Сцены, которые дорого снимать или физически негде снять.</p></div>
+  </div>
+
+  <div class="foot-rule"></div>
+  <div class="foot"><span>4</span><span>ЧПУП «ФОРУСультра» · forus.by</span></div>
+</section>
+
+<!-- ============ 5. Стоимость и контакты ============ -->
+<section class="page">
+  <div class="eyebrow">Ориентиры</div>
+  <h2 class="mt">Из чего складывается стоимость</h2>
+  <p class="mt">Единой цены за секунду мы не публикуем: два ролика одинаковой длины могут различаться
+    по трудоёмкости в несколько раз. На стоимость влияют:</p>
+
+  <table class="mt">
+    <thead><tr><th>Что влияет</th><th>Как именно</th></tr></thead>
+    <tbody>
+      <tr><td>Формат ролика</td><td>статичный кадр с музыкой, кадр с дикторской озвучкой или динамичный видеоряд</td></tr>
+      <tr><td>Озвучка</td><td>наличие диктора и количество голосов</td></tr>
+      <tr><td>Графика</td><td>спецэффекты, компьютерная графика, сложная анимация</td></tr>
+      <tr><td>Объём исходников</td><td>сколько отснятого материала, сколько камер и звуковых дорожек</td></tr>
+      <tr><td>Срочность</td><td>требования к срокам сдачи</td></tr>
+      <tr><td>Дополнительно</td><td>сценарий, подбор музыки, премиальные ИИ-инструменты</td></tr>
+    </tbody>
+  </table>
+
+  <small class="mt">Смету присылаем в течение одного рабочего дня после короткого брифа: пять вопросов,
+    три минуты. Прайс-листы по Республике Беларусь и России высылаем по запросу. Размещение
+    на медиа-скроллерах считается по адресу и периоду — расчёт делается в личном кабинете на forus.by.</small>
+
+  <div class="spacer"></div>
+
+  <div class="orange">
+    <h3>Что предлагаем сделать прямо сейчас</h3>
+    <p class="mt-s">Напишите нам сферу деятельности и город. В течение двух рабочих дней вы бесплатно получите:</p>
+    <ol>
+      <li>подборку 3–5 конструкций с фактическими охватами именно по вашей аудитории;</li>
+      <li>две концепции ролика под ваш продукт со сроком и ценой;</li>
+      <li>ранний доступ в личный кабинет на forus.by, пока обновлённый портал не открыт публично.</li>
+    </ol>
+    <p class="mt-s">Никаких обязательств. Если удобнее голосом — 15 минут разговора в любое рабочее время.</p>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="contacts">
+    <div class="c"><span>Телефон</span><b>+375 (29) 7-143-143</b><i>+375 (44) 7-143-143<br>8 (0212) 43-57-75</i></div>
+    <div class="c"><span>Почта и сайт</span><b>info@forus.by</b><i>forus.by</i></div>
+    <div class="c"><span>Адрес</span><b>г. Витебск</b><i>210016, ул. Володарского, 100<br>ЧПУП «ФОРУСультра», УНП 390476970</i></div>
+  </div>
+
+  <div class="foot-rule"></div>
+  <div class="foot"><span>5</span><span>ЧПУП «ФОРУСультра» · г. Витебск</span></div>
+</section>
+
+</body>
+</html>

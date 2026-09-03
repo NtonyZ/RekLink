@@ -20,6 +20,7 @@ $mime = @{
   ".jpg"  = "image/jpeg"
   ".jpeg" = "image/jpeg"
   ".webp" = "image/webp"
+  ".pdf"  = "application/pdf"
   ".ico"  = "image/x-icon"
   ".woff2"= "font/woff2"
 }
