@@ -161,6 +161,7 @@
         <div class="card" style="padding:22px"><h3 style="font-size:15px">Кампания под ключ</h3><p class="text-sm muted" style="margin:0">Печать, монтаж, контроль размещения, фотоотчёт и оценка результата.</p></div>
       </div>
       <div class="text-center mt-40">
+        <p class="text-sm muted">Смета по вашей задаче — в течение одного рабочего дня.</p>
         <a href="services.html" class="btn btn-outline">Подробнее об услугах →</a>
       </div>
     </div>
@@ -280,7 +281,8 @@ RL_LAYOUT.render("index.html");
 // format cards
 (function(){
   var el = document.getElementById('format-cards');
-  var order = ['poster_static','poster_dynamic','media_poster','led_screen','indoor'];
+  // Порядок совпадает со страницей форматов: медиа-скроллер первым.
+  var order = ['media_poster','poster_static','poster_dynamic','led_screen','indoor'];
   el.innerHTML = order.map(function(code){
     var f = RL.formats[code];
     var icon = {poster_static:'🖼',poster_dynamic:'🔄',media_poster:'📺',led_screen:'🖥',indoor:'📶'}[code];

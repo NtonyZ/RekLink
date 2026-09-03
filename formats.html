@@ -97,7 +97,7 @@ RL.structures.forEach(function (st) {
 var INSIGHTS = {
   poster_static: "Ваш плакат на месте круглосуточно: поверхность не делится ни с кем, 100% времени показа. Таких позиций в адресной программе " + COUNT.poster_static + " — место можно подобрать под конкретный маршрут покупателя, а не из того, что осталось.",
   poster_dynamic: "Лайтбокс делят несколько рекламодателей: плакаты перематываются по кругу. В карточке каждой позиции написано, какую долю цикла занимает ваш плакат. Аренда стоит столько же, сколько статичная, а адресов доступно " + COUNT.poster_dynamic + " из " + COUNT.total + ".",
-  media_poster: "Ролик у вас, скорее всего, уже есть: экран вертикальный, и видео из Reels, TikTok или сторис подходит после лёгкого перекадрирования — заказывать отдельную съёмку не нужно. Летом эти места разбирают заранее: в июле свободна примерно каждая шестая позиция.",
+  media_poster: "Самый новый формат нашей адресной программы и самый востребованный в ней: летом эти места разбирают заранее, в июле свободна примерно каждая шестая позиция. Ролик у вас, скорее всего, уже есть — экран вертикальный, и видео из Reels, TikTok или сторис подходит после лёгкого перекадрирования, заказывать отдельную съёмку не нужно.",
   led_screen: "Платите за выходы, а не за месяц аренды: цена зависит от частоты показа и длительности ролика, взять экран можно и на сутки.",
   indoor: "Реклама внутри помещения наружной не считается: сбор за размещение по ней — 20%, а не 10%. Сбор платит рекламодатель, в стоимость размещения он не входит."
 };
@@ -111,8 +111,12 @@ var FACTS = {
 };
 
 (function () {
-  var order = ["poster_static", "poster_dynamic", "media_poster", "led_screen", "indoor"];
+  // Медиа-скроллер первым: это самый новый формат программы, и с него начинается
+  // разговор с клиентом. Про рынок здесь ничего не утверждается — только про
+  // собственный инвентарь: превосходная степень в рекламе требует доказательств.
+  var order = ["media_poster", "poster_static", "poster_dynamic", "led_screen", "indoor"];
   var VIDEO_FORMATS = ["media_poster", "led_screen", "indoor"];
+  var NEW_IN_PROGRAM = "media_poster";
   var icons = { poster_static: "🖼", poster_dynamic: "🔄", media_poster: "📺", led_screen: "🖥", indoor: "📶" };
   document.getElementById("fmt-list").innerHTML = order.map(function (code) {
     var f = RL.formats[code];
@@ -127,7 +131,9 @@ var FACTS = {
       '<div class="fmt-block" id="' + code + '">' +
         '<div class="fmt-icon" style="background:' + f.color + '">' + icons[code] + "</div>" +
         "<div>" +
-          "<h2>" + f.title + "</h2>" +
+          "<h2>" + f.title +
+            (code === NEW_IN_PROGRAM ? ' <span class="badge badge-gold" style="vertical-align:middle">Новинка программы</span>' : "") +
+          "</h2>" +
           "<p class='muted'>" + f.description + "</p>" +
           '<div class="fmt-facts">' + facts + "</div>" +
           '<div class="insight">' + INSIGHTS[code] + "</div>" +

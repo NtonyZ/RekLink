@@ -101,11 +101,11 @@
       </div>
       <div class="flow">
         <div class="step-b"><b>Шаг 1</b><span>Короткий бриф: что рекламируем, где размещаем, что уже снято.</span></div>
-        <div class="step-b"><b>Шаг 2</b><span>Смета и срок. Считаем под задачу, а не по прайсу «за минуту».</span></div>
+        <div class="step-b"><b>Шаг 2</b><span>Смета и срок — в течение одного рабочего дня. Считаем под задачу, а не по прайсу «за минуту».</span></div>
         <div class="step-b"><b>Шаг 3</b><span>Черновик на согласование — до того, как тратить время на финальную сборку.</span></div>
         <div class="step-b"><b>Шаг 4</b><span>Готовые файлы под каждый носитель и загрузка в плей-лист.</span></div>
       </div>
-      <div class="disclaimer mt-40">Стоимость зависит от формата ролика, дикторской озвучки, объёма графики и срочности, поэтому единой цены за секунду мы не публикуем. Смета — после брифа: пять вопросов, три минуты.</div>
+      <div class="disclaimer mt-40">Стоимость зависит от формата ролика, дикторской озвучки, объёма графики и срочности, поэтому единой цены за секунду мы не публикуем. Смета — после брифа: пять вопросов, три минуты, ответ в течение одного рабочего дня.</div>
     </div>
   </section>
 
@@ -113,7 +113,7 @@
     <div class="container">
       <div class="brief">
         <h2 style="font-size:21px">Расскажите о задаче</h2>
-        <p class="muted text-sm" style="max-width:620px">Ответим со сметой и сроком. Если окажется, что подойдёт уже снятый вами материал, так и скажем.</p>
+        <p class="muted text-sm" style="max-width:620px">Ответим со сметой и сроком в течение одного рабочего дня. Если окажется, что подойдёт уже снятый вами материал, так и скажем.</p>
         <div class="brief-grid mt-24">
           <div class="field"><label>Контактное лицо</label><input id="b-name" placeholder="Имя"></div>
           <div class="field"><label>Телефон</label><input id="b-phone" placeholder="+375 (29) 000-00-00"></div>
@@ -218,7 +218,7 @@ RL_LAYOUT.render("services.html");
 
     var ok = document.getElementById("b-success");
     ok.style.display = "block";
-    ok.textContent = "Бриф № " + num + " отправлен. Менеджер ответит со сметой и сроком; заявка видна в личном кабинете.";
+    ok.textContent = "Бриф № " + num + " отправлен. Смета и срок придут в течение одного рабочего дня; заявка уже видна в личном кабинете.";
     ["b-name", "b-phone", "b-email", "b-subject", "b-comment"].forEach(function (id) { document.getElementById(id).value = ""; });
     document.getElementById("b-consent").checked = false;
   });
