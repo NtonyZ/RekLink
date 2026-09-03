@@ -73,6 +73,21 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; colo
   white-space: nowrap;
   flex-shrink: 0;
 }
+/* Фирменный знак ФОРУС с forus.by. Файл с непрозрачной светлой подложкой,
+   поэтому на тёмном подвале он ставится на белую плашку — иначе виден
+   серый прямоугольник вокруг знака. */
+.logo img {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+.logo-onDark {
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: inline-flex;
+}
+.logo-onDark img { height: 28px; }
 .logo .mark {
   width: 34px;
   height: 34px;
@@ -461,5 +476,5 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; colo
   .hero-stats { gap: 20px; }
   .site-header .inner { gap: 10px; }
   .logo { font-size: 16px; }
-  .logo .mark { width: 28px; height: 28px; font-size: 13px; }
+  .logo img { height: 26px; }
 }

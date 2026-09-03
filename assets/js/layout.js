@@ -24,7 +24,18 @@
     return '<a href="cabinet.html" class="btn btn-ghost btn-sm" title="' + RL_UTIL.escapeHtml(u.phone) + '">' + RL_UTIL.escapeHtml(label) + "</a>";
   }
 
+  // Иконка вкладки ставится отсюда, а не в каждой странице: одиннадцать
+  // одинаковых строк в <head> разъезжаются при первой же правке.
+  function ensureFavicon() {
+    if (document.querySelector('link[rel="icon"]')) return;
+    var link = document.createElement("link");
+    link.rel = "icon";
+    link.href = "assets/img/logo-forus.webp";
+    document.head.appendChild(link);
+  }
+
   function renderHeader(active) {
+    ensureFavicon();
     var el = document.getElementById("site-header");
     if (!el) return;
     var count = RL_UTIL.mpCount();
@@ -36,7 +47,7 @@
     var mpBadge = count ? ' <span class="badge badge-gold" id="mp-count-badge">' + count + "</span>" : "";
     el.innerHTML =
       '<div class="container inner">' +
-        '<a href="index.html" class="logo"><span class="mark">Ф</span>forus.by</a>' +
+        '<a href="index.html" class="logo" aria-label="ФОРУС, на главную"><img src="assets/img/logo-forus.webp" alt="ФОРУС" width="564" height="124"></a>' +
         '<nav class="main-nav">' + links + "</nav>" +
         '<div class="header-cta">' +
           authLink() +
@@ -94,7 +105,7 @@
     el.innerHTML =
       '<div class="container">' +
         '<div class="footer-grid">' +
-          '<div><a href="index.html" class="logo" style="color:#fff"><span class="mark">Ф</span>forus.by</a>' +
+          '<div><a href="index.html" class="logo logo-onDark"><img src="assets/img/logo-forus.webp" alt="ФОРУС" width="564" height="124"></a>' +
             '<p style="margin-top:14px;max-width:280px">Портал продаж рекламного инвентаря ' + s.publicTitle +
             '. Наружная и indoor-реклама: ' + RL.cities.join(", ") + '.</p></div>' +
           '<div><h4>Рекламные места</h4><ul>' +
