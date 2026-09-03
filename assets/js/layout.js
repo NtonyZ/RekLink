@@ -74,9 +74,9 @@
   // Сквозная полоса шагов: клиент всегда видит, на каком этапе он находится и что дальше.
   // Активный шаг задаётся на странице через <div id="site-steps" data-step="N">.
   var STEPS = [
-    { n: 1, label: "Выбор площадок", href: "podbor.html" },
-    { n: 2, label: "Медиаплан", href: "mediaplan.html" },
-    { n: 3, label: "Заявка", href: "mediaplan.html#apply-form" }
+    { n: 1, label: "Выбор площадок", sub: "каталог, карта, подбор", href: "podbor.html" },
+    { n: 2, label: "Медиаплан", sub: "цена, охват, сроки", href: "mediaplan.html" },
+    { n: 3, label: "Заявка", sub: "счёт-протокол", href: "mediaplan.html#apply-form" }
   ];
 
   function renderSteps() {
@@ -90,12 +90,14 @@
       var reachable = s.n === 1 || count > 0 || s.n <= active;
       var badge = s.n === 2 && count ? '<em class="step-count">' + count + "</em>" : "";
       var inner = '<span class="step-n">' + (state === "done" ? "✓" : s.n) + "</span>" +
-                  '<span class="step-label">' + s.label + "</span>" + badge;
+                  '<span class="step-text"><span class="step-label">' + s.label + "</span>" +
+                  '<span class="step-sub">' + s.sub + "</span></span>" + badge;
       return reachable
         ? '<a class="step-chip ' + state + '" href="' + s.href + '">' + inner + "</a>"
         : '<span class="step-chip ' + state + ' disabled">' + inner + "</span>";
-    }).join('<span class="step-sep" aria-hidden="true">→</span>');
-    el.innerHTML = '<div class="container steps-inner">' + html + "</div>";
+    }).join('<span class="step-sep" aria-hidden="true"></span>');
+    el.innerHTML = '<div class="container steps-inner">' +
+      '<span class="steps-caption">Шаг ' + active + " из 3</span>" + html + "</div>";
   }
 
   function renderFooter() {

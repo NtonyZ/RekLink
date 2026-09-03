@@ -404,38 +404,63 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; colo
 }
 .ym-pop .pop-title { font-weight: 700; font-size: 13.5px; margin: 0 16px 4px 0; }
 
-/* Полоса шагов: 1 Выбор площадок → 2 Медиаплан → 3 Заявка */
-.site-steps { background: #fff; border-bottom: 1px solid var(--line); }
-.steps-inner { display: flex; align-items: center; gap: 10px; padding: 12px 24px; flex-wrap: wrap; }
+/* Полоса шагов: 1 Выбор площадок → 2 Медиаплан → 3 Заявка.
+   Это основной ориентир клиента, поэтому она сделана заметной: карточки во всю
+   ширину, активный шаг залит фирменным градиентом, пройденные — зелёные. */
+.site-steps { background: var(--bg-soft); border-bottom: 1px solid var(--line); }
+.steps-inner { display: flex; align-items: center; gap: 0; padding: 16px 24px; }
+.steps-caption {
+  flex: 0 0 auto; margin-right: 18px;
+  font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted); white-space: nowrap;
+}
 .step-chip {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 7px 16px 7px 8px; border-radius: 99px;
-  font-size: 13px; font-weight: 600; color: var(--muted);
+  flex: 1 1 0; min-width: 0;
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  font-weight: 600; color: var(--ink);
   border: 1.5px solid var(--line); background: #fff;
-  transition: border-color .15s, color .15s;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
 }
 .step-chip .step-n {
-  width: 22px; height: 22px; border-radius: 50%;
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
+  font-size: 14px; font-weight: 800;
   background: var(--bg-soft); color: var(--muted);
 }
-.step-chip.active { border-color: var(--violet); color: var(--violet); background: rgba(59,42,152,.05); }
-.step-chip.active .step-n { background: var(--grad); color: #fff; }
-.step-chip.done { color: var(--green); border-color: #bfe6cd; }
-.step-chip.done .step-n { background: #e7f7ec; color: var(--green); }
-.step-chip:not(.disabled):hover { border-color: var(--violet); color: var(--violet); }
-.step-chip.disabled { opacity: .5; cursor: default; }
-.step-chip .step-count {
-  font-style: normal; font-size: 11px; font-weight: 700;
-  background: var(--gold); color: #4a3600; padding: 1px 7px; border-radius: 99px;
+.step-chip .step-text { display: flex; flex-direction: column; min-width: 0; }
+.step-chip .step-label { font-size: 14.5px; font-weight: 700; line-height: 1.2; }
+.step-chip .step-sub { font-size: 11.5px; font-weight: 600; color: var(--muted); line-height: 1.3; margin-top: 2px; }
+
+.step-chip.active {
+  border-color: transparent; background: var(--grad); color: #fff;
+  box-shadow: var(--shadow-sm);
 }
-.step-sep { color: var(--line); font-size: 14px; }
-@media (max-width: 640px) {
-  .steps-inner { gap: 6px; padding: 10px 16px; }
-  .step-chip { padding: 6px 12px 6px 6px; font-size: 12px; }
-  .step-chip .step-label { display: none; }
-  .step-chip.active .step-label { display: inline; }
+.step-chip.active .step-n { background: rgba(255,255,255,.22); color: #fff; }
+.step-chip.active .step-sub { color: rgba(255,255,255,.8); }
+
+.step-chip.done { border-color: #bfe6cd; background: #f2fbf5; color: var(--green); }
+.step-chip.done .step-n { background: var(--green); color: #fff; }
+.step-chip.done .step-sub { color: #5b9c77; }
+
+.step-chip.next { color: var(--muted); }
+.step-chip:not(.disabled):not(.active):hover { border-color: var(--violet); transform: translateY(-1px); }
+.step-chip.disabled { opacity: .55; cursor: default; }
+.step-chip .step-count {
+  margin-left: auto; flex-shrink: 0;
+  font-style: normal; font-size: 11px; font-weight: 800;
+  background: var(--gold); color: #4a3600; padding: 2px 8px; border-radius: 99px;
+}
+.step-chip.active .step-count { background: #fff; color: var(--violet); }
+.step-sep { flex: 0 0 22px; height: 2px; background: var(--line); }
+@media (max-width: 860px) {
+  .steps-inner { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+  .steps-caption { flex: 1 0 100%; margin: 0 0 4px; }
+  .step-chip { padding: 10px 12px; gap: 9px; }
+  .step-chip .step-sub { display: none; }
+  .step-chip .step-label { font-size: 13px; }
+  .step-chip .step-n { width: 27px; height: 27px; font-size: 13px; }
+  .step-sep { flex: 0 0 10px; }
 }
 
 /* Photo placeholder */

@@ -8,20 +8,27 @@
 <link rel="stylesheet" href="assets/css/base.css">
 <style>
 .wiz { max-width:760px; margin:0 auto; }
-.wiz-nav { display:flex; gap:0; margin-bottom:32px; }
-.wiz-nav .n { flex:1; text-align:center; position:relative; padding-top:38px; font-size:13px; color:var(--muted); font-weight:600; }
+/* Шаги мастера — главный ориентир на этой странице, поэтому крупные:
+   номер 44 px, подпись жирная, активный шаг с фирменным ободком. */
+.wiz-nav { display:flex; gap:0; margin-bottom:36px; }
+.wiz-nav .n { flex:1; text-align:center; position:relative; padding-top:56px; font-size:14.5px; color:var(--muted); font-weight:700; }
 .wiz-nav .n::before {
   content:attr(data-n); position:absolute; top:0; left:50%; transform:translateX(-50%);
-  width:30px; height:30px; border-radius:50%; background:var(--bg-soft); color:var(--muted);
-  display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; z-index:2;
+  width:44px; height:44px; border-radius:50%; background:#fff; color:var(--muted);
+  border:2px solid var(--line);
+  display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; z-index:2;
 }
-.wiz-nav .n::after { content:""; position:absolute; top:15px; left:-50%; width:100%; height:2px; background:var(--line); z-index:1; }
+.wiz-nav .n::after { content:""; position:absolute; top:21px; left:-50%; width:100%; height:3px; background:var(--line); z-index:1; }
 .wiz-nav .n:first-child::after { display:none; }
 .wiz-nav .n.active { color:var(--violet); }
-.wiz-nav .n.active::before { background:var(--grad); color:#fff; }
+.wiz-nav .n.active::before {
+  background:var(--grad); color:#fff; border-color:transparent;
+  box-shadow:0 0 0 6px rgba(59,42,152,.12);
+}
 .wiz-nav .n.done { color:var(--green); }
-.wiz-nav .n.done::before { content:"✓"; background:#e7f7ec; color:var(--green); }
-.wiz-nav .n.done::after { background:#bfe6cd; }
+.wiz-nav .n.done::before { content:"✓"; background:var(--green); color:#fff; border-color:transparent; }
+.wiz-nav .n.done::after { background:var(--green); }
+@media (max-width: 640px) { .wiz-nav .n { font-size:12.5px; padding-top:50px; } .wiz-nav .n::before { width:38px; height:38px; font-size:15px; } }
 .wiz-stage { display:none; }
 .wiz-stage.active { display:block; }
 .wiz-card { padding:28px; }
@@ -60,6 +67,9 @@
     <h1>Подбор площадок</h1>
     <p class="muted mb-24">Три шага — и вы увидите, что свободно под вашу задачу, с ценой и охватом. Если предпочитаете выбирать сами, откройте <a href="catalog.html">полный каталог</a>.</p>
 
+    <!-- Подпись нужна: выше идёт сквозная полоса «Шаг 1 из 3», и без неё
+         два ряда с номерами 1-2-3 читаются как противоречие. -->
+    <p class="text-sm muted" style="text-align:center;margin-bottom:10px">Внутри подбора — три шага:</p>
     <div class="wiz-nav">
       <div class="n active" id="n1" data-n="1">Где и когда</div>
       <div class="n" id="n2" data-n="2">Что показываем</div>
