@@ -105,7 +105,7 @@
     el.innerHTML =
       '<div class="container">' +
         '<div class="footer-grid">' +
-          '<div><a href="index.html" class="logo logo-onDark"><img src="assets/img/logo-forus.webp" alt="ФОРУС" width="564" height="124"></a>' +
+          '<div><a href="index.html" class="logo logo-onDark"><img src="assets/img/logo-forus-light.png" alt="ФОРУС" width="564" height="124"></a>' +
             '<p style="margin-top:14px;max-width:280px">Портал продаж рекламного инвентаря ' + s.publicTitle +
             '. Наружная и indoor-реклама: ' + RL.cities.join(", ") + '.</p></div>' +
           '<div><h4>Рекламные места</h4><ul>' +

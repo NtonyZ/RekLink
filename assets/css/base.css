@@ -73,21 +73,15 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; colo
   white-space: nowrap;
   flex-shrink: 0;
 }
-/* Фирменный знак ФОРУС с forus.by. Файл с непрозрачной светлой подложкой,
-   поэтому на тёмном подвале он ставится на белую плашку — иначе виден
-   серый прямоугольник вокруг знака. */
+/* Фирменный знак ФОРУС с forus.by — файл уже с прозрачным фоном.
+   В подвале используется светлая версия: буквы там белые, знак остаётся
+   жёлтым, иначе фиолетовый текст сливается с фиолетовой подложкой. */
 .logo img {
   height: 32px;
   width: auto;
   display: block;
 }
-.logo-onDark {
-  background: #fff;
-  border-radius: 8px;
-  padding: 6px 10px;
-  display: inline-flex;
-}
-.logo-onDark img { height: 28px; }
+.logo-onDark img { height: 30px; }
 .logo .mark {
   width: 34px;
   height: 34px;

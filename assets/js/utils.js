@@ -294,6 +294,14 @@
     return (global.RL_LOCATIONS || {})[num] || null;
   }
 
+  // Склонение существительного при числе: plural(4, "плакат", "плаката", "плакатов")
+  function plural(n, one, few, many) {
+    var m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+    return many;
+  }
+
   function availabilityBadge(avail) {
     var map = {
       free: ['badge-free', 'Свободно'],
@@ -305,7 +313,7 @@
   }
 
   global.RL_UTIL = {
-    money: money, int: int, pct: pct,
+    money: money, int: int, pct: pct, plural: plural,
     flattenPositions: flattenPositions,
     reachFor: reachFor, cpm: cpm, feeEstimate: feeEstimate,
     discountForSelection: discountForSelection,

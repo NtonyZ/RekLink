@@ -104,23 +104,51 @@
       specs.push(["Размер экрана", "6 × 3 м"]);
       specs.push(["Режим работы", structure.workHours]);
     } else {
-      specs.push(["Тип показа", side.displayTypeLabel]);
-      specs.push(["Позиций в стороне", side.positions.length]);
-      if (side.displayType !== "static") {
-        specs.push(["Доля времени показа", RL_UTIL.pct(100 / side.positions.length)]);
+      // «Позиция» и «доля времени показа» — внутренние термины адресной программы.
+      // Клиенту они ничего не говорят, а на видеоэкране слово «позиция» вводит
+      // в заблуждение: там это слот в плей-листе, а не место под плакат.
+      var n = side.positions.length;
+      var SLOT_LABEL = {
+        static: "Плакатов на стороне",
+        rotating: "Плакатов в прокрутке",
+        media: "Роликов в плей-листе"
+      };
+      var shareText;
+      if (side.displayType === "static") {
+        shareText = "100% — плакат виден постоянно";
+      } else if (side.displayType === "media") {
+        shareText = RL_UTIL.pct(100 / n) + " — ваш ролик выходит один раз за круг из " + n;
       } else {
-        specs.push(["Доля времени показа", "100% (виден постоянно)"]);
+        shareText = RL_UTIL.pct(100 / n) + " — ваш плакат показывается один раз за оборот из " + n;
       }
+      specs.push(["Тип показа", side.displayTypeLabel]);
+      specs.push([SLOT_LABEL[side.displayType] || "Позиций в стороне", n]);
+      specs.push(["Доля времени показа", shareText]);
       specs.push(["Тип трафика", { pedestrian: "Пешеходный", vehicle: "Автомобильный", mixed: "Смешанный" }[structure.trafficType]]);
       specs.push(["Направление стороны", RL_UTIL.sideDirectionLabel(structure.trafficType, side.code)]);
       specs.push(["Согласование содержания", structure.requiresContentApproval ? "Требуется" : "Не требуется"]);
-      specs.push(["Разрешение действительно до", structure.permitValidUntil]);
+      // Дата хранится в ISO, но на витрине читается как «30.09.2027»
+      var permit = String(structure.permitValidUntil || "");
+      var iso = permit.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      specs.push(["Разрешение действительно до", iso ? iso[3] + "." + iso[2] + "." + iso[1] : permit]);
     }
     specs.push(["Ставка сбора за рекламу", fmt.feeRate + "% (справочно, плательщик — рекламодатель)"]);
     document.getElementById("specs-grid").innerHTML = specs.map(function (s) {
       return '<div class="spec"><div class="k">' + s[0] + '</div><div class="v">' + s[1] + "</div></div>";
     }).join("");
-    document.getElementById("format-explainer").textContent = fmt.description;
+    // Кроме описания формата объясняем механику показа словами, а не долей.
+    var explainer = fmt.description;
+    var k = isLed ? 0 : side.positions.length;
+    if (!isLed && side.displayType === "media") {
+      explainer += " Экран крутит ролики по кругу: сейчас в плей-листе " + k + " " +
+        RL_UTIL.plural(k, "ролик", "ролика", "роликов") +
+        ", ваш выходит один раз за круг. Если ролик длится 10 секунд, полный круг — " +
+        (k * 10) + " секунд, то есть примерно " + Math.round(3600 / (k * 10)) + " выходов в час.";
+    } else if (!isLed && side.displayType === "rotating") {
+      explainer += " В барабане " + k + " " + RL_UTIL.plural(k, "плакат", "плаката", "плакатов") +
+        ", они перематываются по очереди — ваш виден каждый " + k + "-й оборот.";
+    }
+    document.getElementById("format-explainer").textContent = explainer;
 
     // reach
     var reach = isLed ? RL_UTIL.reachFor(structure.id) : RL_UTIL.reachFor(structure.id, side.code);
