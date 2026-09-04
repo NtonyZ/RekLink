@@ -114,8 +114,10 @@
         media: "Роликов в плей-листе"
       };
       var shareText;
-      if (side.displayType === "static") {
-        shareText = "100% — плакат виден постоянно";
+      if (side.displayType === "static" || n === 1) {
+        // Одна позиция на стороне — делить время не с кем, даже если механизм
+        // прокрутки есть: «один раз за оборот из 1» звучало бы нелепо.
+        shareText = "100% — " + (side.displayType === "media" ? "ролик" : "плакат") + " виден постоянно";
       } else if (side.displayType === "media") {
         shareText = RL_UTIL.pct(100 / n) + " — ваш ролик выходит один раз за круг из " + n;
       } else {
@@ -139,7 +141,9 @@
     // Кроме описания формата объясняем механику показа словами, а не долей.
     var explainer = fmt.description;
     var k = isLed ? 0 : side.positions.length;
-    if (!isLed && side.displayType === "media") {
+    if (!isLed && k === 1 && side.displayType !== "static") {
+      explainer += " На этой стороне одна позиция, поэтому делить время показа не с кем.";
+    } else if (!isLed && side.displayType === "media") {
       explainer += " Экран крутит ролики по кругу: сейчас в плей-листе " + k + " " +
         RL_UTIL.plural(k, "ролик", "ролика", "роликов") +
         ", ваш выходит один раз за круг. Если ролик длится 10 секунд, полный круг — " +

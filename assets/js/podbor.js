@@ -170,15 +170,43 @@
       var reachText = item._reach
         ? RL_UTIL.int(item._reach.total) + " конт./мес · CPM " + RL_UTIL.money(item._cpm)
         : "охват уточняется";
+      // Галочки сняты: клиент отмечает то, что берёт, а не вычёркивает лишнее
+      // из готового списка. Список подбора — предложение, а не корзина.
       return '<div class="res-item">' +
-        '<input type="checkbox" data-idx="' + idx + '" checked>' +
+        '<input type="checkbox" data-idx="' + idx + '">' +
         RL_UTIL.photoTile(item.structureId, item.sideCode, item.net || item.title, item.format, { height: "48px", style: "width:64px;flex-shrink:0", thumb: true }) +
         '<div class="info"><h4>' + RL_UTIL.escapeHtml(item.title) + (item.sideCode ? " · сторона " + item.sideCode : "") + "</h4>" +
         '<div class="meta">' + item.city + " · " + fmt.shortTitle + " · " + reachText + "</div></div>" +
         '<div class="price">' + RL_UTIL.money(item._cost) + "</div>" +
         "</div>";
     }).join("");
+    updatePicked();
   }
+
+  // Счётчик отмеченного и кнопка «отметить все»: список бывает на 30 позиций,
+  // и заставлять кликать по каждой, если нужны все, — тоже неудобно.
+  function pickedBoxes() {
+    return Array.prototype.slice.call(document.querySelectorAll("#res-list input[type=checkbox]"));
+  }
+  function updatePicked() {
+    var boxes = pickedBoxes();
+    var on = boxes.filter(function (b) { return b.checked; });
+    var cost = 0;
+    on.forEach(function (b) { cost += found[parseInt(b.getAttribute("data-idx"), 10)]._cost; });
+    document.getElementById("res-picked").textContent = on.length
+      ? "Отмечено " + on.length + " " + RL_UTIL.plural(on.length, "площадка", "площадки", "площадок") +
+        " на " + RL_UTIL.money(cost)
+      : "Ничего не отмечено";
+    var btn = document.getElementById("pick-all");
+    btn.textContent = (on.length === boxes.length && boxes.length) ? "Снять все" : "Отметить все";
+  }
+  document.getElementById("res-list").addEventListener("change", updatePicked);
+  document.getElementById("pick-all").addEventListener("click", function () {
+    var boxes = pickedBoxes();
+    var turnOn = boxes.some(function (b) { return !b.checked; });
+    boxes.forEach(function (b) { b.checked = turnOn; });
+    updatePicked();
+  });
 
   document.getElementById("back2").addEventListener("click", function () { go(2); });
 
