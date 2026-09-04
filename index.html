@@ -201,8 +201,8 @@ RL_LAYOUT.render("index.html");
     return 'городов';
   }
   var stats = [
-    [RL.structures.length, 'конструкций'],
-    [totalPositions, 'позиций'],
+    [RL.structures.length, RL_UTIL.plural(RL.structures.length, 'конструкция', 'конструкции', 'конструкций')],
+    [totalPositions, RL_UTIL.plural(totalPositions, 'позиция', 'позиции', 'позиций')],
     [RL.cities.length, CITY_WORD(RL.cities.length)],
     [years, YEARS_WORD(years) + ' на рынке']
   ];
