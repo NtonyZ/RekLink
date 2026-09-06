@@ -68,7 +68,9 @@
         : RL_UTIL.photoPlaceholder(v.label, format, { height: height });
     }
     function setMain(idx) {
-      mainEl.innerHTML = tile(views[idx], "360px");
+      // Кадры вертикальные, поэтому главному снимку нужно больше высоты,
+      // иначе он занимает узкую полосу посреди широкой рамки.
+      mainEl.innerHTML = tile(views[idx], "460px");
       thumbsEl.querySelectorAll("[data-idx]").forEach(function (el) {
         el.classList.toggle("active", parseInt(el.getAttribute("data-idx"), 10) === idx);
       });

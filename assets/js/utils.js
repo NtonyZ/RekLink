@@ -244,6 +244,12 @@
     var url = photoUrl(structureId, sideCode, opts.thumb);
     if (!url) return photoPlaceholder(label, formatCode, opts);
     var a = photoFrameAttrs(opts, "has-photo");
+    // Тот же файл уходит в CSS-переменную: из него делается размытая подложка.
+    // Путь обязателен абсолютный: относительный внутри CSS считается от файла
+    // стилей (assets/css/), а не от страницы, и подложка не грузится.
+    var absUrl = url;
+    try { absUrl = new URL(url, document.baseURI).href; } catch (e) { /* оставляем как есть */ }
+    a.style += "--photo:url('" + absUrl + "');";
     // Ленивая загрузка — для списков с десятками карточек; для главного снимка
     // карточки площадки она только задерживает отрисовку.
     var loading = opts.eager ? "" : ' loading="lazy"';

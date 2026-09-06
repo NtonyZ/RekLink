@@ -478,11 +478,27 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; colo
 }
 .photo-ph-icon { font-size: 30px; opacity: .9; }
 .photo-ph-label { font-size: 12px; font-weight: 600; padding: 0 12px; opacity: .95; text-shadow: 0 1px 3px rgba(0,0,0,.25); }
-/* Реальный снимок площадки внутри той же рамки, что и заглушка */
-.photo-ph.has-photo { background: var(--bg-soft); }
-.photo-ph.has-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Реальный снимок площадки внутри той же рамки, что и заглушка.
+   Снимки из адресной презентации вертикальные (примерно 3:4), а рамки
+   горизонтальные, поэтому object-fit: cover срезал у конструкции верх и низ.
+   contain показывает кадр целиком: поля по бокам честнее обрезанной конструкции. */
+.photo-ph.has-photo { background: #eceaf4; }
+.photo-ph.has-photo img { width: 100%; height: 100%; object-fit: contain; display: block; position: relative; z-index: 1; }
+/* Поля по бокам вертикального кадра заполняет он же — размытый и увеличенный.
+   Пустые серые полосы на широкой рамке выглядят как брак вёрстки. */
+.photo-ph.has-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--photo);
+  background-size: cover;
+  background-position: center;
+  filter: blur(16px);
+  transform: scale(1.2);
+  opacity: .5;
+}
 .photo-ph .photo-ph-side {
-  position: absolute; left: 8px; bottom: 8px;
+  position: absolute; left: 8px; bottom: 8px; z-index: 2;
   background: rgba(17,17,26,.72); color: #fff;
   font-size: 10.5px; font-weight: 700; letter-spacing: .02em;
   padding: 3px 8px; border-radius: 99px; backdrop-filter: blur(2px);
