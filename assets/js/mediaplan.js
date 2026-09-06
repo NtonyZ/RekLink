@@ -126,10 +126,10 @@
     });
     document.getElementById("summary-lines").innerHTML =
       '<div class="summary-line"><span>Площадок в подборке</span><span>' + items.length + "</span></div>" +
-      '<div class="summary-line"><span>Аренда</span><span>' + RL_UTIL.money(rentTotal) + "</span></div>" +
-      (printTotal ? '<div class="summary-line"><span>Печать постеров</span><span>' + RL_UTIL.money(printTotal) + "</span></div>" : "") +
+      '<div class="summary-line"><span>Размещение рекламы</span><span>' + RL_UTIL.money(rentTotal) + "</span></div>" +
+      (printTotal ? '<div class="summary-line"><span>Изготовление постеров</span><span>' + RL_UTIL.money(printTotal) + "</span></div>" : "") +
       '<div class="summary-line total"><span>Итого</span><span>' + RL_UTIL.money(grandTotal) + "</span></div>" +
-      '<div class="summary-line text-sm muted"><span>Сбор за размещение рекламы (справочно, плательщик — рекламодатель)</span><span>' + RL_UTIL.money(feeTotal) + "</span></div>" +
+      '<div class="summary-line text-sm muted"><span>Сбор за размещение рекламы (справочно, 10% от размещения, плательщик — рекламодатель)</span><span>' + RL_UTIL.money(feeTotal) + "</span></div>" +
       '<div class="summary-line text-sm muted"><span>НДС</span><span>не облагается</span></div>' +
       // Иначе непонятно, почему сбор меньше ожидаемого
       (exemptCount

@@ -239,14 +239,16 @@
       var fee = RL_UTIL.feeEstimate(rentDiscounted, format);
 
       var lines = [];
-      lines.push(["Аренда (" + months + " мес.)", RL_UTIL.money(rentBase)]);
+      // Размещение и изготовление — отдельные услуги: так они идут в счёте-протоколе,
+      // и от этого зависит база сбора за размещение рекламы.
+      lines.push(["Размещение рекламы (" + months + " мес.)", RL_UTIL.money(rentBase)]);
       if (discount) lines.push(["Скидка за срок/объём", "−" + RL_UTIL.pct(discount)]);
-      if (printTotal) lines.push(["Печать постера", RL_UTIL.money(printTotal)]);
+      if (printTotal) lines.push(["Изготовление постера", RL_UTIL.money(printTotal)]);
       document.getElementById("price-lines").innerHTML =
         lines.map(function (l) { return '<div class="price-line"><span>' + l[0] + "</span><span>" + l[1] + "</span></div>"; }).join("") +
         '<div class="price-line total"><span>Итого</span><span>' + RL_UTIL.money(total) + "</span></div>" +
         '<div class="price-line text-sm muted"><span>Сбор за размещение рекламы' +
-          (fee.exempt ? " (не взимается)" : " (справочно, " + fee.rate + "% от аренды)") + "</span><span>" +
+          (fee.exempt ? " (не взимается)" : " (справочно, " + fee.rate + "% от стоимости размещения)") + "</span><span>" +
           (fee.exempt ? "—" : RL_UTIL.money(fee.amount)) + "</span></div>" +
         '<div class="price-line text-sm muted"><span>НДС</span><span>не облагается</span></div>';
 
