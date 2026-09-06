@@ -110,10 +110,17 @@
     return priceTotal / (reachTotal / 1000);
   }
 
-  function feeEstimate(amount, format) {
+  // Сбор считается от стоимости услуг по размещению — печать материалов
+  // в базу не входит, поэтому сюда передаётся аренда, а не итог со счёта.
+  // Видеопанели в помещениях от сбора освобождены: feeRate у них 0.
+  function feeEstimate(placementAmount, format) {
     var fmt = RL.formats[format];
-    var rate = fmt ? fmt.feeRate : 10;
-    return { rate: rate, amount: amount * (rate / 100) };
+    var rate = fmt && typeof fmt.feeRate === "number" ? fmt.feeRate : 10;
+    return {
+      rate: rate,
+      exempt: !!(fmt && fmt.feeExempt),
+      amount: placementAmount * (rate / 100)
+    };
   }
 
   function discountForSelection(months, positionsCount) {

@@ -134,7 +134,9 @@
       var iso = permit.match(/^(\d{4})-(\d{2})-(\d{2})$/);
       specs.push(["Разрешение действительно до", iso ? iso[3] + "." + iso[2] + "." + iso[1] : permit]);
     }
-    specs.push(["Ставка сбора за рекламу", fmt.feeRate + "% (справочно, плательщик — рекламодатель)"]);
+    specs.push(["Сбор за размещение рекламы", fmt.feeExempt
+      ? "не взимается — реклама в помещении не является объектом обложения"
+      : fmt.feeRate + "% от стоимости размещения (плательщик — рекламодатель)"]);
     document.getElementById("specs-grid").innerHTML = specs.map(function (s) {
       return '<div class="spec"><div class="k">' + s[0] + '</div><div class="v">' + s[1] + "</div></div>";
     }).join("");
@@ -234,7 +236,7 @@
       var rentDiscounted = rentBase * (1 - discount / 100);
       var printTotal = (!isLed && fmt.printPrice) ? fmt.printPrice : 0;
       var total = rentDiscounted + printTotal;
-      var fee = RL_UTIL.feeEstimate(total, format);
+      var fee = RL_UTIL.feeEstimate(rentDiscounted, format);
 
       var lines = [];
       lines.push(["Аренда (" + months + " мес.)", RL_UTIL.money(rentBase)]);
@@ -243,10 +245,14 @@
       document.getElementById("price-lines").innerHTML =
         lines.map(function (l) { return '<div class="price-line"><span>' + l[0] + "</span><span>" + l[1] + "</span></div>"; }).join("") +
         '<div class="price-line total"><span>Итого</span><span>' + RL_UTIL.money(total) + "</span></div>" +
-        '<div class="price-line text-sm muted"><span>Сбор за размещение рекламы (справочно, ' + fee.rate + '%)</span><span>' + RL_UTIL.money(fee.amount) + "</span></div>" +
+        '<div class="price-line text-sm muted"><span>Сбор за размещение рекламы' +
+          (fee.exempt ? " (не взимается)" : " (справочно, " + fee.rate + "% от аренды)") + "</span><span>" +
+          (fee.exempt ? "—" : RL_UTIL.money(fee.amount)) + "</span></div>" +
         '<div class="price-line text-sm muted"><span>НДС</span><span>не облагается</span></div>';
 
-      document.getElementById("fee-note").innerHTML = "<strong>Сбор за размещение рекламы</strong> уплачивается рекламодателем самостоятельно (" + RL.feeInfo.decree + "). Компания сбор не удерживает и не перечисляет.";
+      document.getElementById("fee-note").innerHTML = fee.exempt
+        ? "<strong>Сбор за размещение рекламы не взимается:</strong> реклама, размещаемая в зданиях и помещениях, не является объектом обложения (" + RL.feeInfo.decreeShort + ")."
+        : "<strong>Сбор за размещение рекламы</strong> уплачивается рекламодателем самостоятельно (" + RL.feeInfo.decreeShort + "), считается от стоимости размещения без печати. Компания сбор не удерживает и не перечисляет.";
 
       // Крайние даты обратным ходом от старта + проверка выполнимости (п. 11.5 ТЗ)
       var sched = RL_UTIL.scheduleFeasibility(format, startOffset);

@@ -72,7 +72,7 @@
       var print = (item.format !== "led_screen" && fmt.printPrice) ? fmt.printPrice : 0;
       var cost = rent + print;
       if (spent + cost <= budget) {
-        picked.push(Object.assign({ startOffset: startOffset, months: months, cost: cost }, item));
+        picked.push(Object.assign({ startOffset: startOffset, months: months, cost: cost, rent: rent }, item));
         spent += cost;
       }
     });
@@ -95,10 +95,10 @@
     var totalReach = 0, reachCount = 0;
     picked.forEach(function (item) { if (item._reach) { totalReach += item._reach.total * months; reachCount++; } });
     var cpm = totalReach ? RL_UTIL.cpm(spent, totalReach) : null;
-    // Ставка сбора зависит от формата: наружная реклама — 10%, видеопанели
-    // в помещениях — 20%. Считаем по каждой площадке, а не по всей сумме.
+    // Наружная реклама — 10% от стоимости размещения; видеопанели в помещениях
+    // сбором не облагаются. Считаем по каждой площадке от аренды, без печати.
     var feeAmount = 0;
-    picked.forEach(function (item) { feeAmount += RL_UTIL.feeEstimate(item.cost, item.format).amount; });
+    picked.forEach(function (item) { feeAmount += RL_UTIL.feeEstimate(item.rent, item.format).amount; });
 
     document.getElementById("c-summary").innerHTML =
       '<div class="result-summary">' +
@@ -180,7 +180,7 @@
       el.innerHTML = '<div class="empty-state"><h3>Медиаплан пуст</h3><p class="muted">Добавьте площадки в <a href="catalog.html">каталоге</a>, затем вернитесь сюда — калькулятор покажет стоимость и охват.</p><a href="catalog.html" class="btn btn-primary mt-24">Перейти в каталог</a></div>';
       return;
     }
-    var rentTotal = 0, printTotal = 0, reachTotal = 0, reachCount = 0;
+    var rentTotal = 0, printTotal = 0, reachTotal = 0, reachCount = 0, feeTotal = 0;
     mp.items.forEach(function (it) {
       var fmt = RL.formats[it.format];
       var monthly = it.format === "led_screen" ? RL.ledScreenRates[1].month.s15 : fmt.priceMonth;
@@ -188,11 +188,11 @@
       var rent = monthly * it.months * (1 - discount / 100);
       var print = (it.format !== "led_screen" && fmt.printPrice) ? fmt.printPrice : 0;
       rentTotal += rent; printTotal += print;
+      feeTotal += RL_UTIL.feeEstimate(rent, it.format).amount;
       var reach = it.side ? RL_UTIL.reachFor(it.structureId, it.side) : RL_UTIL.reachFor(it.structureId);
       if (reach) { reachTotal += reach.total; reachCount++; }
     });
     var total = rentTotal + printTotal;
-    var fee = RL_UTIL.feeEstimate(total, "poster_static");
     var cpm = reachTotal ? RL_UTIL.cpm(total, reachTotal) : null;
 
     el.innerHTML =
@@ -201,7 +201,7 @@
         '<div class="metric"><b>' + RL_UTIL.money(total) + '</b><span>итоговая стоимость</span></div>' +
         '<div class="metric"><b>' + (reachTotal ? RL_UTIL.int(reachTotal) : "—") + '</b><span>охват/мес (' + reachCount + " из " + mp.items.length + ")</span></div>" +
         (cpm ? '<div class="metric"><b>' + RL_UTIL.money(cpm) + '</b><span>CPM</span></div>' : "") +
-        '<div class="metric"><b>' + RL_UTIL.money(fee.amount) + '</b><span>сбор справочно</span></div>' +
+        '<div class="metric"><b>' + RL_UTIL.money(feeTotal) + '</b><span>сбор справочно</span></div>' +
       "</div>" +
       '<a href="mediaplan.html" class="btn btn-primary">Открыть медиаплан и оформить заявку</a>';
   }

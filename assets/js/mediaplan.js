@@ -113,13 +113,15 @@
   }
 
   function renderSummary() {
-    var rentTotal = 0, printTotal = 0, feeTotal = 0, grandTotal = 0;
+    var rentTotal = 0, printTotal = 0, feeTotal = 0, grandTotal = 0, exemptCount = 0;
     items.forEach(function (item) {
       var p = priceFor(item);
       rentTotal += p.rentAfter;
       printTotal += p.print;
-      var fee = RL_UTIL.feeEstimate(p.total, item.format);
+      // База — аренда после скидки, без печати постеров
+      var fee = RL_UTIL.feeEstimate(p.rentAfter, item.format);
       feeTotal += fee.amount;
+      if (fee.exempt) exemptCount++;
       grandTotal += p.total;
     });
     document.getElementById("summary-lines").innerHTML =
@@ -128,7 +130,15 @@
       (printTotal ? '<div class="summary-line"><span>Печать постеров</span><span>' + RL_UTIL.money(printTotal) + "</span></div>" : "") +
       '<div class="summary-line total"><span>Итого</span><span>' + RL_UTIL.money(grandTotal) + "</span></div>" +
       '<div class="summary-line text-sm muted"><span>Сбор за размещение рекламы (справочно, плательщик — рекламодатель)</span><span>' + RL_UTIL.money(feeTotal) + "</span></div>" +
-      '<div class="summary-line text-sm muted"><span>НДС</span><span>не облагается</span></div>';
+      '<div class="summary-line text-sm muted"><span>НДС</span><span>не облагается</span></div>' +
+      // Иначе непонятно, почему сбор меньше ожидаемого
+      (exemptCount
+        ? '<div class="summary-line text-sm muted"><span>' + exemptCount + " " +
+          RL_UTIL.plural(exemptCount, "площадка", "площадки", "площадок") +
+          " в помещениях — сбором " +
+          RL_UTIL.plural(exemptCount, "не облагается", "не облагаются", "не облагаются") +
+          "</span><span></span></div>"
+        : "");
   }
 
   function renderReach() {
