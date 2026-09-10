@@ -46,7 +46,7 @@
     var discount = RL_UTIL.discountForSelection(months, items.length);
     var rentBase = monthly * months;
     var rentAfter = rentBase * (1 - discount / 100);
-    var print = (item.format !== "led_screen" && fmt.printPrice) ? fmt.printPrice : 0;
+    var print = RL_UTIL.printCost(item.format, item.print);
     var total = rentAfter + print;
     return { monthly: monthly, months: months, discount: discount, rentBase: rentBase, rentAfter: rentAfter, print: print, total: total };
   }
@@ -71,6 +71,12 @@
             '<div class="flex gap-8 no-print">' +
               '<select data-role="start" data-idx="' + idx + '">' + monthOpts + "</select>" +
               '<select data-role="months" data-idx="' + idx + '">' + durOpts + "</select>" +
+              (RL_UTIL.printsFor(item.format)
+                ? '<select data-role="print" data-idx="' + idx + '" title="Плакат для этой конструкции">' +
+                    '<option value="1"' + (item.print === false ? "" : " selected") + ">Изготовим плакат · " + RL_UTIL.money(fmt.printPrice) + "</option>" +
+                    '<option value="0"' + (item.print === false ? " selected" : "") + ">Плакат свой</option>" +
+                  "</select>"
+                : "") +
             "</div>" +
             '<button class="remove no-print" data-remove="' + idx + '">Удалить из медиаплана</button>' +
           "</div>" +
@@ -101,12 +107,18 @@
         persistAndRender();
       });
     });
+    el.querySelectorAll('[data-role="print"]').forEach(function (sel) {
+      sel.addEventListener("change", function () {
+        items[parseInt(sel.getAttribute("data-idx"), 10)].print = sel.value === "1";
+        persistAndRender();
+      });
+    });
   }
 
   function persistAndRender() {
     var d = RL_UTIL.mpLoad();
     d.items = items.map(function (it) {
-      return { structureId: it.structureId, side: it.side ? it.side.code : null, format: it.format, title: it.title, city: it.city, startOffset: it.startOffset, months: it.months, addedAt: it.addedAt };
+      return { structureId: it.structureId, side: it.side ? it.side.code : null, format: it.format, title: it.title, city: it.city, startOffset: it.startOffset, months: it.months, print: it.print !== false, addedAt: it.addedAt };
     });
     RL_UTIL.mpSave(d);
     renderAll();
@@ -114,10 +126,14 @@
 
   function renderSummary() {
     var rentTotal = 0, printTotal = 0, feeTotal = 0, grandTotal = 0, exemptCount = 0;
+    var printCount = 0, ownPrintCount = 0;
     items.forEach(function (item) {
       var p = priceFor(item);
       rentTotal += p.rentAfter;
       printTotal += p.print;
+      if (RL_UTIL.printsFor(item.format)) {
+        if (item.print === false) ownPrintCount++; else printCount++;
+      }
       // База — аренда после скидки, без печати постеров
       var fee = RL_UTIL.feeEstimate(p.rentAfter, item.format);
       feeTotal += fee.amount;
@@ -127,7 +143,13 @@
     document.getElementById("summary-lines").innerHTML =
       '<div class="summary-line"><span>Площадок в подборке</span><span>' + items.length + "</span></div>" +
       '<div class="summary-line"><span>Размещение рекламы</span><span>' + RL_UTIL.money(rentTotal) + "</span></div>" +
-      (printTotal ? '<div class="summary-line"><span>Изготовление постеров</span><span>' + RL_UTIL.money(printTotal) + "</span></div>" : "") +
+      (printTotal
+        ? '<div class="summary-line"><span>Изготовление плакатов' + (printCount ? " (" + printCount + " шт.)" : "") + "</span><span>" + RL_UTIL.money(printTotal) + "</span></div>"
+        : "") +
+      (ownPrintCount
+        ? '<div class="summary-line text-sm muted"><span>Плакат заказчика: ' + ownPrintCount + " " +
+          RL_UTIL.plural(ownPrintCount, "площадка", "площадки", "площадок") + " — изготовление не оплачивается</span><span>0,00 BYN</span></div>"
+        : "") +
       '<div class="summary-line total"><span>Итого</span><span>' + RL_UTIL.money(grandTotal) + "</span></div>" +
       '<div class="summary-line text-sm muted"><span>Сбор за размещение рекламы (справочно, 10% от размещения, плательщик — рекламодатель)</span><span>' + RL_UTIL.money(feeTotal) + "</span></div>" +
       '<div class="summary-line text-sm muted"><span>НДС</span><span>не облагается</span></div>' +
@@ -139,6 +161,19 @@
           RL_UTIL.plural(exemptCount, "не облагается", "не облагаются", "не облагаются") +
           "</span><span></span></div>"
         : "");
+    renderPrintNote(printCount, ownPrintCount);
+  }
+
+  // Условия по плакату показываем ровно те, что относятся к подборке:
+  // если весь плакат свой — про нашу гарантию писать незачем, и наоборот.
+  function renderPrintNote(printCount, ownPrintCount) {
+    var el = document.getElementById("mp-print-note");
+    var parts = [];
+    if (printCount) parts.push(RL.printInfo.warranty);
+    if (ownPrintCount) parts.push(RL.printInfo.own);
+    if (!parts.length) { el.style.display = "none"; return; }
+    el.textContent = parts.join(" ");
+    el.style.display = "block";
   }
 
   function renderReach() {
@@ -277,7 +312,7 @@
     var period = startM.label === endM.label ? startM.short : startM.short + "–" + endM.short;
     var grandTotal = items.reduce(function (sum, it) { return sum + priceFor(it).total; }, 0);
     var orderItems = items.map(function (it) {
-      return { structureId: it.structureId, side: it.side ? it.side.code : null, format: it.format, title: it.title, city: it.city, startOffset: it.startOffset, months: it.months };
+      return { structureId: it.structureId, side: it.side ? it.side.code : null, format: it.format, title: it.title, city: it.city, startOffset: it.startOffset, months: it.months, print: it.print !== false };
     });
 
     RL_UTIL.ordersAdd({

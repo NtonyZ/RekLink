@@ -228,6 +228,16 @@
     });
     var monthsSel = document.getElementById("b-months");
 
+    // Выбор «плакат наш / плакат свой» показываем только там, где плакат вообще
+    // печатается: у видеоформатов печатать нечего.
+    var printSel = null;
+    if (RL_UTIL.printsFor(format)) {
+      document.getElementById("b-print-field").style.display = "";
+      printSel = document.getElementById("b-print");
+      printSel.querySelector('option[value="1"]').textContent = "Изготовим мы · " + RL_UTIL.money(fmt.printPrice);
+      printSel.addEventListener("change", recalc);
+    }
+
     function recalc() {
       var startOffset = parseInt(startSel.value, 10);
       var months = parseInt(monthsSel.value, 10);
@@ -236,7 +246,9 @@
       var discount = RL_UTIL.discountForSelection(months, positionsCount);
       var rentBase = monthlyPrice * months;
       var rentDiscounted = rentBase * (1 - discount / 100);
-      var printTotal = (!isLed && fmt.printPrice) ? fmt.printPrice : 0;
+      // Плакат можно не заказывать, если он у клиента уже есть
+      var wantsPrint = printSel ? printSel.value === "1" : true;
+      var printTotal = isLed ? 0 : RL_UTIL.printCost(format, wantsPrint);
       var total = rentDiscounted + printTotal;
       var fee = RL_UTIL.feeEstimate(rentDiscounted, format);
 
@@ -245,7 +257,13 @@
       // и от этого зависит база сбора за размещение рекламы.
       lines.push(["Размещение рекламы (" + months + " мес.)", RL_UTIL.money(rentBase)]);
       if (discount) lines.push(["Скидка за срок/объём", "−" + RL_UTIL.pct(discount)]);
-      if (printTotal) lines.push(["Изготовление постера", RL_UTIL.money(printTotal)]);
+      if (printTotal) lines.push(["Изготовление плаката", RL_UTIL.money(printTotal)]);
+      else if (printSel) lines.push(["Изготовление плаката", "плакат заказчика"]);
+      if (printSel) {
+        var noteEl = document.getElementById("print-note");
+        noteEl.textContent = wantsPrint ? RL.printInfo.warranty : RL.printInfo.own;
+        noteEl.style.display = "block";
+      }
       document.getElementById("price-lines").innerHTML =
         lines.map(function (l) { return '<div class="price-line"><span>' + l[0] + "</span><span>" + l[1] + "</span></div>"; }).join("") +
         '<div class="price-line total"><span>Итого</span><span>' + RL_UTIL.money(total) + "</span></div>" +

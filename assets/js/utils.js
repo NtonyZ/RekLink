@@ -110,6 +110,19 @@
     return priceTotal / (reachTotal / 1000);
   }
 
+  // Печать плаката — отдельная услуга, от которой заказчик может отказаться,
+  // если у него уже есть подходящий плакат. Признак хранится в позиции
+  // медиаплана полем print; у старых сохранённых планов его нет, поэтому
+  // отсутствие значения читается как «печатаем».
+  function printsFor(format) {
+    var fmt = RL.formats[format];
+    return !!(fmt && fmt.printPrice);
+  }
+  function printCost(format, wantsPrint) {
+    if (!printsFor(format) || wantsPrint === false) return 0;
+    return RL.formats[format].printPrice;
+  }
+
   // Сбор считается от стоимости услуг по размещению — печать материалов
   // в базу не входит, поэтому сюда передаётся аренда, а не итог со счёта.
   // Видеопанели в помещениях от сбора освобождены: feeRate у них 0.
@@ -323,6 +336,7 @@
     money: money, int: int, pct: pct, plural: plural,
     flattenPositions: flattenPositions,
     reachFor: reachFor, cpm: cpm, feeEstimate: feeEstimate,
+    printsFor: printsFor, printCost: printCost,
     discountForSelection: discountForSelection,
     mpLoad: mpLoad, mpSave: mpSave, mpAdd: mpAdd, mpRemove: mpRemove, mpClear: mpClear, mpCount: mpCount,
     ordersLoad: ordersLoad, ordersAdd: ordersAdd,
