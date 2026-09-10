@@ -11,7 +11,9 @@
 .breadcrumb a { color:var(--violet); }
 .sd-grid { display:grid; grid-template-columns:1fr 380px; gap:32px; align-items:start; }
 .gallery-main { border-radius:var(--radius); overflow:hidden; margin-bottom:10px; }
-.gallery-thumbs { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+/* Ячейки миниатюр в пропорцию кадра (3:4), иначе вертикальный снимок
+   стоит по центру широкой ячейки и ряд выглядит рваным. */
+.gallery-thumbs { display:grid; grid-template-columns:repeat(auto-fill,84px); gap:10px; }
 .gallery-thumbs .photo-ph { cursor:pointer; border-radius:8px; }
 .gallery-thumbs [data-idx] { border-radius:8px; outline:2px solid transparent; outline-offset:1px; transition:outline-color .15s; }
 .gallery-thumbs [data-idx].active { outline-color:var(--violet); }

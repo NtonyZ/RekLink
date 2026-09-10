@@ -76,7 +76,7 @@
       });
     }
     thumbsEl.innerHTML = views.map(function (v, i) {
-      return '<div data-idx="' + i + '">' + tile(v, "70px") + "</div>";
+      return '<div data-idx="' + i + '">' + tile(v, "112px") + "</div>";
     }).join("");
     thumbsEl.querySelectorAll("[data-idx]").forEach(function (el) {
       el.addEventListener("click", function () { setMain(parseInt(el.getAttribute("data-idx"), 10)); });

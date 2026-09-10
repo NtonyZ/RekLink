@@ -162,7 +162,7 @@
         ? (summary.free ? "Свободно" : "Занято")
         : (freePositions + " своб. из " + summary.total));
     return (
-      '<div class="pop-photo">' + RL_UTIL.photoTile(item.structureId, item.sideCode, tileLabel(item), item.format, { height: "90px", sideBadge: !!item.sideCode }) + "</div>" +
+      '<div class="pop-photo">' + RL_UTIL.photoTile(item.structureId, item.sideCode, tileLabel(item), item.format, { height: "150px", sideBadge: !!item.sideCode }) + "</div>" +
       '<div class="pop-title">' + RL_UTIL.escapeHtml(item.title) + "</div>" +
       '<div class="pop-meta">' + metaLine(item) + " · " + availText + "<br>" +
         (item.type === "indoor" ? "от " : "") + RL_UTIL.money(item.price) + " / мес · " + reachLine + "</div>" +
@@ -261,7 +261,7 @@
         : RL_UTIL.availabilityBadge(avail);
       return (
         '<a class="cat-item" href="' + detailHref(item) + '" data-id="' + item.id + '">' +
-          RL_UTIL.photoTile(item.structureId, item.sideCode, tileLabel(item), item.format, { height: "72px", cls: "thumb", thumb: true }) +
+          RL_UTIL.photoTile(item.structureId, item.sideCode, tileLabel(item), item.format, { height: "112px", cls: "thumb", thumb: true }) +
           '<div class="info">' +
             "<h4>" + RL_UTIL.escapeHtml(item.title) + "</h4>" +
             '<div class="meta">' + metaLine(item) + " · " + reachLine + "</div>" +

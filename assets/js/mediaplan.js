@@ -64,7 +64,7 @@
       }).join("");
       return (
         '<div class="mp-item" data-idx="' + idx + '">' +
-          RL_UTIL.photoTile(item.structureId, item.side ? item.side.code : null, (item.structure && item.structure.net) || item.title, item.format, { height: "84px", style: "width:110px;flex-shrink:0", thumb: true }) +
+          RL_UTIL.photoTile(item.structureId, item.side ? item.side.code : null, (item.structure && item.structure.net) || item.title, item.format, { height: "112px", style: "width:84px;flex-shrink:0", thumb: true }) +
           '<div class="info">' +
             "<h4>" + RL_UTIL.escapeHtml(item.title) + (item.side ? " · сторона " + item.side.code : "") + "</h4>" +
             '<div class="meta">' + item.city + " · " + fmt.shortTitle + "</div>" +
